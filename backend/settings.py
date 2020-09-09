@@ -25,12 +25,12 @@ SECRET_KEY = '5-9ajo9^x&nu=!8w&0tssx(=l926@r80o$-rh2++2^jp1n0swf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = (
-    'http:localhost:8081'
-)
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:3000'
+]
 
 # Application definition
 
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #'rest_framework_mongoengine',
     'rest_framework',
-    #'corsheaders'
+    'corsheaders',
     'mayoristaAPI.apps.MayoristaapiConfig',
 ]
 
