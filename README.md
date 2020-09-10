@@ -1,5 +1,8 @@
-# ![Mayorium icon](logo.png) Repositorio del trabajo de inserción profesional (TIP) de  Mayorium
+<img src="logo.png" width="30%" height="30%" style="display: block; margin-left: auto; margin-right: auto;">
 
+# Repositorio proyecto Mayorium
+
+## Trabajo de inserción profesional (TIP) de la Universidad Nacional de Quilmes
 Alumno: Octavio Pompilio
 
 ### Motivación
