@@ -9,16 +9,30 @@ function App() {
 
   return (
     <div className="App">
-      {/*<header className="App-header"></header> */}
+      {
+        /*
+      width="75" height="75"
+      <header className="App-header"></header>
+      <img src="./favicon.png" className="App-logo" alt="logo" />*/
+      }
       <Router>
         <header>
           <Navbar bg="dark" variant="light" expand="sm">
-            <Nav className="mr-auto">
+          <Navbar.Brand href="user">
+            <img
+              alt=""
+              src="./logo_transparent.png"
+              width="50"
+              height="50"
+              className="d-inline-block align-top"
+            /> {' '}
+          </Navbar.Brand>
+          <Nav className="mr-auto">
             <Form inline>
-            <Nav.Link href="/">Minorista</Nav.Link>
-            <Nav.Link href="user">Mayorista</Nav.Link>
+              <Nav.Link href="user">Mayorista</Nav.Link>
+              <Nav.Link href="/">Minorista</Nav.Link>
             </Form>
-            </Nav>
+          </Nav>
           </Navbar>
         </header>
           <Switch>
