@@ -18,7 +18,7 @@ const MinoristaView : React.FC = (props) => {
     <Container fluid="md">
     <Row>
         <Col className="mb-3" xs={3}>
-        
+        asfv
         </Col>
         <Col
             className="container-fluid" 

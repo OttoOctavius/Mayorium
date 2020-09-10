@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import MinoristaView from './view/MinoristaView';
+import MayoristaView from './view/MayoristaView';
 import { Navbar, Nav, Form } from 'react-bootstrap';
 import { Switch, Route, BrowserRouter as Router} from 'react-router-dom';
 
@@ -14,16 +15,20 @@ function App() {
           <Navbar bg="dark" variant="light" expand="sm">
             <Nav className="mr-auto">
             <Form inline>
-            <Nav.Link href="/"></Nav.Link>
+            <Nav.Link href="/">Minorista</Nav.Link>
+            <Nav.Link href="user">Mayorista</Nav.Link>
             </Form>
             </Nav>
           </Navbar>
         </header>
-        <body>
           <Switch>
-            <Route path="/" component={MinoristaView}/>
+            <Route path="/" exact>
+              <MinoristaView />
+            </Route>
+            <Route path="/user">
+              <MayoristaView />
+            </Route>
           </Switch>
-        </body>
       </Router>
     </div>
   );

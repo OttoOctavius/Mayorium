@@ -1,9 +1,7 @@
 from rest_framework import serializers
 from mayoristaAPI.models import Producto
 
-
 class ProductoSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
     nombre = serializers.CharField(required=True, allow_blank=False, max_length=100)
     precio = serializers.IntegerField(default=0)
     precioPublico = serializers.IntegerField(default=0)
