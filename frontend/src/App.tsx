@@ -2,6 +2,9 @@ import React from 'react';
 import './App.css';
 import MinoristaView from './view/MinoristaView';
 import MayoristaView from './view/MayoristaView';
+import Login from './view/Login';
+import SignUp from './view/SignUp';
+
 import { Navbar, Nav, Form } from 'react-bootstrap';
 import { Switch, Route, BrowserRouter as Router} from 'react-router-dom';
 
@@ -33,8 +36,13 @@ function App() {
               <Nav.Link href="/">Minorista</Nav.Link>
             </Form>
           </Nav>
+          <Navbar.Brand href="mr-auto">
+              <Nav.Link href="sign-in">Login</Nav.Link>
+              <Nav.Link href="sign-up">Sign up</Nav.Link>
+          </Navbar.Brand>
           </Navbar>
         </header>
+        
           <Switch>
             <Route path="/" exact>
               <MinoristaView />
@@ -42,7 +50,10 @@ function App() {
             <Route path="/user">
               <MayoristaView />
             </Route>
+            <Route path="/sign-in" component={Login} />
+            <Route path="/sign-up" component={SignUp} />
           </Switch>
+
       </Router>
     </div>
   );
