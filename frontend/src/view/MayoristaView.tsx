@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Button } from 'react-bootstrap';
 import DividirProductos from '../component/DividirProductos';
 import CrearProductoModal from '../component/CrearProductoModal';
 import HacerPedidoModal from '../component/HacerPedidoModal';

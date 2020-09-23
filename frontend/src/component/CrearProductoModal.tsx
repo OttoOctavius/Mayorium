@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Button, Card, InputGroup, FormControl, Modal, Form } from 'react-bootstrap';
-import ReactDOM from 'react-dom';
+import React, { useState, useRef } from 'react';
+import { Row, Col, Button, InputGroup, Modal, Form } from 'react-bootstrap';
+//import ReactDOM from 'react-dom';
 import { newProducto, Producto } from '../model/Producto';
 import { sendProducto } from '../api/mayorista';
 

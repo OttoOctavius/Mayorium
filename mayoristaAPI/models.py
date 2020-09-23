@@ -16,12 +16,11 @@ def sinSedes():
     return {}
 
 class Sede(models.Model):
-    _id = models.ObjectIdField()
+    #_id = models.ObjectIdField()
     ubicacion = models.CharField(max_length=100)
     #stock = [models.EmbeddedField(model_container=Partida)]
 
 class Mayorista(models.Model):
-    _id = models.ObjectIdField()
     first_name = models.CharField(max_length=100, default="", editable=False)
     last_name = models.CharField(max_length=100, default="", editable=False)
     username = models.CharField(max_length=100, default="", editable=False)
@@ -30,10 +29,16 @@ class Mayorista(models.Model):
     password = models.CharField(max_length=50, default="", editable=False)
     compraMinima = models.IntegerField(blank=True)
     compraMaxima = models.IntegerField(blank=True)
+    """
+    @property
+    def clave(self):
+        return self.id
+    
     sede = models.ArrayReferenceField(
         to=Sede,
         on_delete=models.CASCADE,
     )
+    """
     #profile = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     def crearUsuario(user):
         user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
@@ -48,10 +53,14 @@ class Mayorista(models.Model):
             )"""
 
     #Repositorio
-    def search(email,password):
-        return Mayorista.objects.get(email=email)
+    """
+    Busca si existe el username con la pass
+    PreCondicion: Estan sanitizada
+    """
+    def searchUser(mail,password):
+        return Mayorista.objects.get(email=mail)
     def __str__(self):
-        return self.nombre
+        return self.username
 
 """
 class Dicty(models.Model):

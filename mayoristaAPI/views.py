@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.core import serializers
 
 from mayoristaAPI.productoRepo import getAll, esProductoNuevo
 
@@ -54,13 +55,20 @@ def register(request):
 
 @api_view(['POST'])
 def getUser(request):
-    if request.method != 'POST':
-        return HttpResponse("no deberia pasar")
-    
-    serializer = MayoristaSerializer(data=request.data)
-    serializer.is_valid()
-    if serializer.validated_data["email"] and request.data["password"]==1234:
-        user = Mayorista.search(serializer.validated_data["email"],1234)
-        print(user)
-        return Response(user, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #serializer = MayoristaSerializer(data=request.data)
+    #serializer.is_valid()
+
+    #if serializer.validated_data["email"] and request.data["password"]==1234:
+    #username = request.data["username"]
+    email_ = request.data["email"]
+    password = request.data["password"]
+    try:
+        user = Mayorista.searchUser(email_,password)
+        user_json = serializers.serialize('json',[user]) #,fields=('fields') , fields=('_id') o user.clave
+        #print(user._id)
+        return Response(user_json, status=status.HTTP_200_OK) #, content_type="text/json-comment-filtered"
+    except Exception as er:
+        print(er)
+        return Response("Parametros incorrectos", status=status.HTTP_400_BAD_REQUEST)
+    #except:
+    #    return Response("Parametros incorrectos", status=status.HTTP_400_BAD_REQUEST)

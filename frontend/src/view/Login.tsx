@@ -1,31 +1,40 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import {signInMayorista} from '../api/mayorista';
+import {User, UserLogin} from '../types/User';
 
-const Login : React.FC = (props) => {
+export interface Props {
+    logeado: (clave:number, usuario:User) => void
+}
+
+const Login : React.FC<Props> = (props) => {
     const [validated, setValidated] = useState(false);
     
     function handleSubmit(event:any){
         const form = event.currentTarget;
+
+        event.preventDefault();
+        event.stopPropagation();
+
         if (form.checkValidity() === false) {
-          event.preventDefault();
-          event.stopPropagation();
+            return;
         }
         else{
-            const data = new FormData(form) //event.target);
-            console.log("data form") 
-            console.log("nombre")
-            console.log(data.get("nombre"))
-            console.log("cont")
-            console.log(data.get("contacto"))
-
-            console.log("por mandar")
-            signInMayorista(data).then(console.log)
-            event.preventDefault();
-            event.stopPropagation();
-          }
-    
-        setValidated(true);
+            const data = new FormData(form)
+            let email = data.get("email") as string
+            let pass = data.get("password") as string
+            if( email!== null && email.length !== 0 && pass!== null && pass.length !== 0 ){
+                let userlogin : UserLogin = {
+                    email : email,
+                    password : pass  
+                }
+                signInMayorista(userlogin).then( async (resp:any) => {
+                    let mayoristaResponse = JSON.parse(await resp)[0]
+                    props.logeado(124,mayoristaResponse.fields)
+                })
+            }
+            setValidated(true);
+        }
     }
 
     return (
