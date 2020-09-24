@@ -5,8 +5,8 @@ from django.core import serializers
 
 from mayoristaAPI.productoRepo import getAll, esProductoNuevo
 
-from mayoristaAPI.models import Producto, Mayorista
-from mayoristaAPI.serializers import ProductoSerializer, MayoristaSerializer
+from mayoristaAPI.models import Producto, Mayorista, Pedido
+from mayoristaAPI.serializers import ProductoSerializer, MayoristaSerializer, StockPedidoSerializer
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import status
@@ -72,3 +72,35 @@ def getUser(request):
         return Response("Parametros incorrectos", status=status.HTTP_400_BAD_REQUEST)
     #except:
     #    return Response("Parametros incorrectos", status=status.HTTP_400_BAD_REQUEST)
+
+#@api_view(['GET'])
+def pedidos(request):
+    return HttpResponse(serializers.serialize('json', Pedido.getAll()))
+    """
+    #1 intento
+    content = [ serializers.serialize('json',[pedido]) for pedido in Pedido.getAll() ]
+    return HttpResponse(content)
+    #2 intento
+    content  = [ pedido for pedido in Pedido.getAll() ]
+    return HttpResponse(JSONRenderer().render(**content))
+    """
+@api_view(['POST'])
+def newpedido(request):
+    acum_serial = [ StockPedidoSerializer(data=datos) for datos in request.data ]
+    #transformarlo en un nuevo serializador Pedido
+    creados = [ dict(stockser.create()) for stockser in acum_serial if stockser.is_valid()]
+    print(creados)
+
+    if len(creados)>0: # and all(list(map(acum_serial, lambda part: part.is_valid()))
+        print("hay mas de 1 partida")
+        Pedido.crearPedido(creados).save()
+        
+        return Response("ok", status=status.HTTP_201_CREATED)
+    return Response("no", status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def confirmarPedido(request):
+    print(request.GET['clave'])
+    return HttpResponse()
+
+

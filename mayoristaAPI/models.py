@@ -3,9 +3,11 @@ from django.contrib.auth.models import User
 #from django.contrib.postgres.fields import ArrayField
 
 class Partida(models.Model):
-    producto = models.IntegerField(default=0)
-    
+    readonly_fields = ('id',)
+    producto = models.CharField(max_length=12) #models.ObjectIdField()
+    nombre =  models.CharField(max_length=100)
     stock = models.IntegerField(default=0)
+    
     #pub_date = models.DateTimeField('date published')
     #question = models.ForeignKey(Question, on_delete=models.CASCADE)
     def __str__(self):
@@ -16,11 +18,12 @@ def sinSedes():
     return {}
 
 class Sede(models.Model):
-    #_id = models.ObjectIdField()
+    
     ubicacion = models.CharField(max_length=100)
     #stock = [models.EmbeddedField(model_container=Partida)]
 
 class Mayorista(models.Model):
+    #readonly_fields = ('id',)
     first_name = models.CharField(max_length=100, default="", editable=False)
     last_name = models.CharField(max_length=100, default="", editable=False)
     username = models.CharField(max_length=100, default="", editable=False)
@@ -74,6 +77,7 @@ class KeyVal(models.Model):
 
 
 class Producto(models.Model):
+    #readonly_fields = ('id',)
     nombre = models.CharField(max_length=100)
     precio = models.IntegerField(default=0)
     precioPublico = models.IntegerField(default=0)
@@ -84,3 +88,27 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre#{'nombre': self.nombre, 'precio': self.precio} #.to_string()
     #dict no tiene conversion, hay que usar la de JSON
+
+class StockPedido(models.Model):
+    nombre =  models.CharField(max_length=100)
+    stock = models.IntegerField(default=0)
+
+    class Meta:
+        abstract = True
+
+class Pedido(models.Model):
+    _id = models.ObjectIdField()
+    #readonly_fields = ('id',)
+    mayorista = models.CharField(max_length=12)#models.ObjectIdField()
+    distribuidor = models.CharField(max_length=12)#models.ObjectIdField()
+    #EmbeddedField
+    productos = models.ArrayField(
+        model_container=StockPedido,
+        null=True
+    )
+
+    def getAll():
+        return Pedido.objects.all()
+
+    def crearPedido(arrayStock):
+        return Pedido.objects.create(mayorista="mayorista", distribuidor="distribuidor", productos=arrayStock)
