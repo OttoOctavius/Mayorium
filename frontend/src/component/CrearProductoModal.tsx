@@ -106,12 +106,12 @@ export default function CrearProductoModal(props:any) {
         <Modal.Footer>
         <Row>
             <Col xs={2} md={1}>
-                <Button variant="primary" onClick={props.onHide}>Cerrar</Button>
+                <Button data-testid="Cerrar" variant="primary" onClick={props.onHide} value="Cerrar" />
             </Col>
             <Col xs={6} md={4}>
             </Col>
             <Col xs={2} md={1}>
-                <Button variant="primary" onClick={onSend} type="submit"> Crear </Button>
+                <Button data-testid="Crear" variant="secondary" onClick={onSend} value="Crear" />
             </Col>
         </Row>
         </Modal.Footer>
