@@ -1,32 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Button, Card, InputGroup, FormControl, Modal, Form } from 'react-bootstrap';
-import ReactDOM from 'react-dom';
-import { newProducto, Producto } from '../model/Producto';
-import { sendProducto } from '../api/mayorista';
+import React, { useState, useRef } from "react";
+import { Row, Col, Button, InputGroup, Modal, Form } from "react-bootstrap";
+//import ReactDOM from "react-dom";
+import { newProducto } from "../model/Producto";
+import { sendProducto } from "../api/mayorista";
 
-const enviarProducto = sendProducto;
 /*
 const enviarProducto2 = function(prod:Producto){
     const data = new FormData()
-        data.append('nombre', prod.nombre);
-        data.append('precio', prod.precio.toString());
-        data.append('precioPublico', prod.precioPublico.toString());
-        data.append('stock', prod.stock.toString());
+        data.append("nombre", prod.nombre);
+        data.append("precio", prod.precio.toString());
+        data.append("precioPublico", prod.precioPublico.toString());
+        data.append("stock", prod.stock.toString());
     //sendProducto(data);
 }*/
 
-export default function CrearProductoModal(props:any) {
+export interface Props {
+    onHide: () => void;
+    onSuccess:()=>void;
+}
+
+export default function CrearProductoModal(props:any) { //: React.FC<Props> 
     const formulario = useRef(null)
     const nombreRef = useRef(null)
     const [nombre, setNombre] = useState<string|undefined>();
     const [precio, setPrecio] = useState<number|undefined>();
     const [precioPublico, setPrecioPublico] = useState<number|undefined>();
     const [stock, setStock] = useState<number>(0);
+    const [huboFalla, setHuboFalla] = useState<string>("");
 
     const onSend = () => {
-        if(nombre == undefined || nombre.length == 0 ) return;
+        setHuboFalla("");
+        if(nombre === undefined || nombre.length === 0) return;
 
-        let prod = newProducto(nombre)
+        let prod = newProducto(nombre);
         if(precio && precio > 0) prod.precio = precio;
         if(precioPublico && precioPublico > 0) prod.precioPublico = precioPublico;
         if(stock && stock > 0) prod.stock = stock;
@@ -38,7 +44,7 @@ export default function CrearProductoModal(props:any) {
         }
         formProducto.props no se encuentra?
         */
-        enviarProducto(prod).then(console.log,console.log).catch(()=>console.log("no"))
+        sendProducto(prod).then(props.onSuccess, setHuboFalla ).catch(setHuboFalla);
     }
     
     return (
@@ -64,6 +70,7 @@ export default function CrearProductoModal(props:any) {
                             type="text"
                             placeholder="Producto nuevo"
                             defaultValue={nombre}
+                            data-testid="nombre"
                             onChange={(e:any)=>setNombre(e.currentTarget.value)}
                             ref={nombreRef}
                             />
@@ -79,12 +86,14 @@ export default function CrearProductoModal(props:any) {
                             type="number"
                             placeholder="Precio"
                             defaultValue={precio}
+                            data-testid="precio"
                             onChange={(e:any)=>setPrecio(e.currentTarget.value)}
                         />
                         <Form.Control
                             type="number"
                             placeholder="Precio para el publico"
                             defaultValue={precioPublico}
+                            data-testid="precio-publico"
                             onChange={(e:any)=>setPrecioPublico(e.currentTarget.value)}
                         />
                     </InputGroup>
@@ -99,6 +108,7 @@ export default function CrearProductoModal(props:any) {
                         min={0}
                         max={100}
                         defaultValue={stock}
+                        data-testid="stock"
                         onChange={(e:any)=>setStock(e.currentTarget.value)}/>
                 </Form.Group>
             </Form>
@@ -106,12 +116,21 @@ export default function CrearProductoModal(props:any) {
         <Modal.Footer>
         <Row>
             <Col xs={2} md={1}>
-                <Button variant="primary" onClick={props.onHide}>Cerrar</Button>
+                <Button data-testid="Cerrar" variant="secondary" onClick={props.onHide}>
+                    Cerrar
+                </Button>
             </Col>
             <Col xs={6} md={4}>
+                {
+                    huboFalla === ""? 
+                        <> </> :
+                        <Form.Label>{huboFalla}</Form.Label>
+                }
             </Col>
             <Col xs={2} md={1}>
-                <Button variant="primary" onClick={onSend} type="submit"> Crear </Button>
+                <Button data-testid="Crear" variant="primary" onClick={onSend}>
+                    Crear
+                </Button>
             </Col>
         </Row>
         </Modal.Footer>
