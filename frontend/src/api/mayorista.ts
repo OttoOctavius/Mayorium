@@ -43,7 +43,7 @@ export const sendPedido = async (pedido:Pedido) => {
     if(response.status === 201 || response.status === 400)
         return new Promise((resolve, reject) => {
         if(response.status === 201) resolve("¡Éxito!")
-        if(response.status === 400) reject("esta mal pero no tanto")
+        if(response.status === 400) reject("Datos invalidos")
     })
     else
         return Promise.reject("fallo")

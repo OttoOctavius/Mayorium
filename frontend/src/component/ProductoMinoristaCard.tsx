@@ -1,6 +1,6 @@
-import React from 'react';
-import { Row, Col, Button, Card } from 'react-bootstrap';
-import { Producto } from '../model/Producto';
+import React from "react";
+import { Row, Col, Button, Card } from "react-bootstrap";
+import { Producto } from "../model/Producto";
 
 type ProductoMinoristaCardProps = {
     producto : Producto

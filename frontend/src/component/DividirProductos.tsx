@@ -1,7 +1,7 @@
-import React from 'react';
-import { Row, Col } from 'react-bootstrap';
-import {ProductoMinoristaCard as TarjetaProducto} from '../component/ProductoMinoristaCard';
-import { Producto } from '../model/Producto';
+import React from "react";
+import { Row, Col } from "react-bootstrap";
+import {ProductoMinoristaCard as TarjetaProducto} from "../component/ProductoMinoristaCard";
+import { Producto } from "../model/Producto";
 
 const DividirProductos = (elem:Producto[], elemxFila:number, anchoTarjeta:number) => {
     let filas = Math.trunc(elem.length/elemxFila)

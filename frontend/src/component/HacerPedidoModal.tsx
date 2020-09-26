@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Button, InputGroup, Modal, Form } from 'react-bootstrap';
-import { Producto } from '../model/Producto';
-import { sendPedido } from '../api/mayorista';
+import React, { useState, useEffect, useRef } from "react";
+import { Row, Col, Button, InputGroup, Modal, Form } from "react-bootstrap";
+import { Producto } from "../model/Producto";
+import { sendPedido } from "../api/mayorista";
 
 /*
 <Form.Control as="select"> 
@@ -18,12 +18,13 @@ interface Pedido {
 function mapProducto(pr:Producto) : Pedido {
     return {nombre:pr.nombre, id:pr.nombre, stock:0} //pr.id
 }
-//func util: Object.assign({}, ['a','b','c'])
+//func util: Object.assign({}, ["a","b","c"])
 //otra es :  Object.fromEntries(entries);
 
 export default function CrearProductoModal(props:any, productos:Producto[]) {
     const formulario = useRef(null)    
     const [parProductoStock, setParProductoStock] = useState({});
+    const [huboFalla, setHuboFalla] = useState<string>("");
 
     useEffect( ()=>{
         let pares = props.productos.map(mapProducto)
@@ -36,7 +37,7 @@ export default function CrearProductoModal(props:any, productos:Producto[]) {
         console.log(parProductoStock)
         let mapeo = Object.values(parProductoStock).map( (p:any) => {
             return {...p, 
-                stock:p.id==id?stock:p.stock
+                stock:p.id===id?stock:p.stock
             }})
         setParProductoStock(
                 Object.assign({}, mapeo)
@@ -47,7 +48,7 @@ export default function CrearProductoModal(props:any, productos:Producto[]) {
         let pedidos = Object.values(parProductoStock)
         let pedidosMalos = pedidos.filter( (p:any) => p.stock<0)
         if(pedidosMalos.length>0) return;
-        sendPedido(pedidos.filter( (p:any) => p.stock>0)).then(console.log,console.log).catch(()=>console.log("no"))
+        sendPedido(pedidos.filter( (p:any) => p.stock>0)).then(props.onSuccess, setHuboFalla).catch(setHuboFalla)
     }
 
     function filaProducto(pedido:Pedido, key:number) {
@@ -98,7 +99,12 @@ export default function CrearProductoModal(props:any, productos:Producto[]) {
                   <Button variant="primary" onClick={props.onHide}>Cerrar</Button>
               </Col>
               <Col xs={6} md={4}>
-              </Col>
+                {
+                    huboFalla === ""? 
+                        <> </> :
+                        <Form.Label>{huboFalla}</Form.Label>
+                }
+            </Col>
               <Col xs={2} md={1}>
                   <Button variant="primary" onClick={onSend} type="submit"> Crear </Button>
               </Col>

@@ -50,11 +50,13 @@
     "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^26.0.14",
     "@types/mocha": "^8.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "babel-eslint": "^10.1.0",
     "identity-obj-proxy": "^3.0.0"
   },
   "jest": {
     "moduleNameMapper": {
-      
       "\\.(gif|ttf|eot|svg)$": "src/__mocks__/fileMock.ts",
       "\\.(s?css|less)$": "identity-obj-proxy"
     }

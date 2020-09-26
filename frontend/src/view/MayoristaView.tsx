@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Button, InputGroup } from 'react-bootstrap';
-import DividirProductos from '../component/DividirProductos';
-import CrearProductoModal from '../component/CrearProductoModal';
-import HacerPedidoModal from '../component/HacerPedidoModal';
-import {getProductos, getPedidos, confirmarPedido} from '../api/mayorista';
-import { Producto } from '../model/Producto';
+import React, { useState, useEffect } from "react";
+import { Container, Row, Button, InputGroup } from "react-bootstrap";
+import DividirProductos from "../component/DividirProductos";
+import CrearProductoModal from "../component/CrearProductoModal";
+import HacerPedidoModal from "../component/HacerPedidoModal";
+import {getProductos, getPedidos, confirmarPedido} from "../api/mayorista";
+import { Producto } from "../model/Producto";
 
 const MayoristaView : React.FC = (props) => {
     const [producto_modalShow, producto_setModalShow] = React.useState(false);
@@ -16,9 +16,12 @@ const MayoristaView : React.FC = (props) => {
     const elemxFila = 3;
     const anchoTarjeta = 12 / elemxFila;
 
+    const cargarProductos = () => getProductos().then(setProductos);
+    const cargarPedidos = () => getPedidos().then( (res:any) => setPedidos(res.map((ped:any) => { return {...ped.fields, pk:ped.pk}})));
+
     useEffect( ()=>{
-        getProductos().then(setProductos)
-        getPedidos().then( (res:any) => setPedidos(res.map((ped:any) => { return {...ped.fields, pk:ped.pk}})))
+        cargarProductos();
+        cargarPedidos();
     },[])  
     
     return <>
@@ -33,6 +36,7 @@ const MayoristaView : React.FC = (props) => {
         <CrearProductoModal
             show={producto_modalShow}
             onHide={() => producto_setModalShow(false)}
+            onSuccess={()=>{cargarProductos();producto_setModalShow(false);}}
         />
 
     </Row>
@@ -51,6 +55,7 @@ const MayoristaView : React.FC = (props) => {
         <HacerPedidoModal
             show={pedido_modalShow}
             onHide={() => pedido_setModalShow(false)}
+            onSuccess={()=>{cargarPedidos();pedido_setModalShow(false);}}
             productos={productos}
         />
 
