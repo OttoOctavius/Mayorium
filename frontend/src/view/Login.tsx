@@ -3,13 +3,17 @@ import { Form } from "react-bootstrap";
 import {signInMayorista} from '../api/mayorista';
 import {User, UserLogin} from '../types/User';
 
+import { useHistory } from "react-router-dom";
+/*
 export interface Props {
     logeado: (clave:number, usuario:User) => void
-}
+Props
+}*/
 
-const Login : React.FC<Props> = (props) => {
+const Login : React.FC = (props) => {
     const [validated, setValidated] = useState(false);
-    
+    let history = useHistory();
+
     function handleSubmit(event:any){
         const form = event.currentTarget;
 
@@ -30,7 +34,9 @@ const Login : React.FC<Props> = (props) => {
                 }
                 signInMayorista(userlogin).then( async (resp:any) => {
                     let mayoristaResponse = JSON.parse(await resp)[0]
-                    props.logeado(124,mayoristaResponse.fields)
+                    console.log(mayoristaResponse) //TODO: poner el pk
+                    //props.logeado(124,mayoristaResponse.fields)
+                    history.push("/user")
                 })
             }
             setValidated(true);

@@ -1,21 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import MinoristaView from './view/MinoristaView';
 import MayoristaView from './view/MayoristaView';
 import Login from './view/Login';
 import SignUp from './view/SignUp';
-import history from "./utils/history";
+//import history from "./utils/history";
 import { Navbar, Nav, Form } from 'react-bootstrap';
-import { Switch, Route, BrowserRouter as Router} from 'react-router-dom';
+import { Switch, Route, useHistory, BrowserRouter as Router} from 'react-router-dom';
+//import { createBrowserHistory } from "history";
 
-const App : React.FC = () => {
-  /*
-  let history = useHistory()
+
+const App : React.FC = (props:any) => {
+  //let history = useHistory();
+  const [ruta, setRuta] = useState<string>("/");
+  //let location = useLocation();
+
   const logeo = (n:number,a:object) => {
-    
-    history.push("/user") //(n,usuario)=>{console.log(usuario)}
-    
-  }  */
+     //(n,usuario)=>{console.log(usuario)}
+  }
+
+  React.useEffect(() => {
+    //history.push(ruta)
+  }, [ruta]);
+
   return (
     <div className="App">
       {
@@ -49,22 +56,22 @@ const App : React.FC = () => {
           </Navbar>
         </header>
         
-          <Switch>
+        <Switch>
             <Route path="/" exact>
               <MinoristaView />
             </Route>
-            <Route path="/user" history={history}>
+            <Route path="/user">
               <MayoristaView />
             </Route>
-            <Route path="/sign-in" history={history}>
-             <Login logeado={(a,b)=>history.push("/user")}></Login>
+            <Route path="/sign-in">
+             <Login ></Login>
             </Route>
             <Route path="/sign-up" component={SignUp} />
-          </Switch>
+        </Switch>
 
       </Router>
     </div>
   );
 }
-
+//logeado={(a,b)=> setRuta("/user")}
 export default App;
