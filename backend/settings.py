@@ -25,11 +25,11 @@ SECRET_KEY = '5-9ajo9^x&nu=!8w&0tssx(=l926@r80o$-rh2++2^jp1n0swf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000','http://127.0.0.1'
 ]
 
 # Application definition

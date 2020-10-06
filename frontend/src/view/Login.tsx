@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
-import {signInMayorista} from '../api/mayorista';
-import {User, UserLogin} from '../types/User';
+import { signInMayorista } from '../api/mayorista';
+import { UserLogin } from '../types/User';
 
 import { useHistory } from "react-router-dom";
 /*
@@ -33,8 +33,12 @@ const Login : React.FC = (props) => {
                     password : pass  
                 }
                 signInMayorista(userlogin).then( async (resp:any) => {
-                    let mayoristaResponse = JSON.parse(await resp)[0]
-                    console.log(mayoristaResponse) //TODO: poner el pk
+                    let mayoristaResponse = JSON.parse(await resp)[0];
+                    //TODO: poner el pk como id!
+                    mayoristaResponse.fields.id = mayoristaResponse.pk;
+                    //console.log(mayoristaResponse.fields)
+
+                    localStorage.setItem("user", JSON.stringify(mayoristaResponse.fields));
                     //props.logeado(124,mayoristaResponse.fields)
                     history.push("/user")
                 })

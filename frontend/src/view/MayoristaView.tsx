@@ -2,27 +2,31 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Button, InputGroup } from "react-bootstrap";
 import DividirProductos from "../component/DividirProductos";
 import CrearProductoModal from "../component/CrearProductoModal";
-import HacerPedidoModal from "../component/HacerPedidoModal";
+import {HacerPedidoModal, EditarPedidoModal} from "../component/HacerPedidoModal";
 import {getProductos, getPedidos, confirmarPedido} from "../api/mayorista";
 import { Producto } from "../model/Producto";
+import { PedidoStock } from "../types/Pedido";
 
 const MayoristaView : React.FC = (props) => {
     const [producto_modalShow, producto_setModalShow] = React.useState(false);
-    const [pedido_modalShow, pedido_setModalShow] = React.useState(false);
-    
+    const [pedidoCrear_modalShow, pedidoCrear_setModalShow] = React.useState(false);
+    const [pedidoEditar_modalShow, pedidoEditar_setModalShow] = React.useState(false);
+
     const [productos, setProductos] = useState<Producto[]>([])
-    const [pedidos, setPedidos] = useState([])
+    const [pedidos, setPedidos] = useState<PedidoStock[]>([])
 
     const elemxFila = 3;
     const anchoTarjeta = 12 / elemxFila;
 
     const cargarProductos = () => getProductos().then(setProductos);
-    const cargarPedidos = () => getPedidos().then( (res:any) => setPedidos(res.map((ped:any) => { return {...ped.fields, pk:ped.pk}})));
+    const cargarPedidos = () => getPedidos().then(setPedidos)
+
+        // (res:any) => setPedidos(res.map((ped:any) => { return {...ped.fields, pk:ped.pk}})));
 
     useEffect( ()=>{
         cargarProductos();
         cargarPedidos();
-    },[])  
+    },[])
     
     return <>
     <Container fluid="md">
@@ -48,14 +52,14 @@ const MayoristaView : React.FC = (props) => {
         Partidas
         <br />
 
-        <Button variant="primary" onClick={() => pedido_setModalShow(true)}>
+        <Button variant="primary" onClick={() => pedidoCrear_setModalShow(true)}>
             Preparar pedido
         </Button>
 
         <HacerPedidoModal
-            show={pedido_modalShow}
-            onHide={() => pedido_setModalShow(false)}
-            onSuccess={()=>{cargarPedidos();pedido_setModalShow(false);}}
+            show={pedidoCrear_modalShow}
+            onHide={() => pedidoCrear_setModalShow(false)}
+            onSuccess={()=>{cargarPedidos();pedidoCrear_setModalShow(false);}}
             productos={productos}
         />
 
@@ -67,6 +71,14 @@ const MayoristaView : React.FC = (props) => {
                 </InputGroup.Prepend>
                 <InputGroup.Text id="basic-addon1">{Object.values(p.productos)}</InputGroup.Text>
                 <Button variant="primary" onClick={() => confirmarPedido(p.pk)}>Confirmar</Button>
+                <Button variant="primary" onClick={() => pedidoEditar_setModalShow(true)}>Editar</Button>
+                <EditarPedidoModal
+                    show={pedidoEditar_modalShow}
+                    onHide={() => pedidoEditar_setModalShow(false)}
+                    onSuccess={()=>{cargarPedidos();pedidoEditar_setModalShow(false);}}
+                    productos={productos}
+                    pedido={p}
+                />
             </InputGroup>
             <br />
             </>

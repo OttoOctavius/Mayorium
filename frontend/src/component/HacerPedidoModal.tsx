@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Row, Col, Button, InputGroup, Modal, Form } from "react-bootstrap";
-import { Producto } from "../model/Producto";
+import { PedidoProducto, newPedidoProducto } from "../types/Pedido";
 import { sendPedido } from "../api/mayorista";
+import { editarPedido } from "../api/pedidos";
 
 /*
 <Form.Control as="select"> 
@@ -9,28 +10,36 @@ import { sendPedido } from "../api/mayorista";
 </Form.Control>
 */
 
-interface Pedido {
-    id: string | undefined
-    nombre : string
-    stock  : number
-}
 
-function mapProducto(pr:Producto) : Pedido {
-    return {nombre:pr.nombre, id:pr.nombre, stock:0} //pr.id
-}
 //func util: Object.assign({}, ["a","b","c"])
 //otra es :  Object.fromEntries(entries);
 
-export default function CrearProductoModal(props:any, productos:Producto[]) {
+export function HacerPedidoModal(props:any) {
+    let pares = props.productos.map(newPedidoProducto)
+    console.log(props.productos)
+    return PedidoModal(props, Object.assign({}, pares), sendPedido)
+}
+
+export function EditarPedidoModal(props:any) {
+    let pares = Object.assign({}, props.productos.map(newPedidoProducto))
+    let productosPrevios = props.pedido.productos
+    let arrPrevios = Object.values(productosPrevios)
+    //console.log(productosPrevios)
+    let mapeo = Object.values(pares).map( (p:any) => {
+        return {...p//, stock:p.nombre===?stock:p.stock
+    }})
+    
+    return PedidoModal(props, mapeo, editarPedido)
+}
+
+//Pedido[]=>Promise<any>
+export default function PedidoModal(props:any, pedidoInicial:object, enviar:((pedidos:any)=>any)) {
     const formulario = useRef(null)    
     const [parProductoStock, setParProductoStock] = useState({});
     const [huboFalla, setHuboFalla] = useState<string>("");
 
     useEffect( ()=>{
-        let pares = props.productos.map(mapProducto)
-        setParProductoStock(
-            Object.assign({}, pares)
-        )
+        setParProductoStock(pedidoInicial)
     },[props.productos])
 
     const modPedido = (id:string|undefined, stock:number) => {
@@ -48,10 +57,12 @@ export default function CrearProductoModal(props:any, productos:Producto[]) {
         let pedidos = Object.values(parProductoStock)
         let pedidosMalos = pedidos.filter( (p:any) => p.stock<0)
         if(pedidosMalos.length>0) return;
-        sendPedido(pedidos.filter( (p:any) => p.stock>0)).then(props.onSuccess, setHuboFalla).catch(setHuboFalla)
+        enviar(pedidos.filter( (p:any) => p.stock>0))
+        //sendPedido(pedidos.filter( (p:any) => p.stock>0))
+            .then(props.onSuccess, setHuboFalla).catch(setHuboFalla)
     }
 
-    function filaProducto(pedido:Pedido, key:number) {
+    function filaProducto(pedido:PedidoProducto, key:number) {
         return (
             <Form.Group controlId={pedido.id} key={key}>
                       <InputGroup className="mb-3">
@@ -68,7 +79,7 @@ export default function CrearProductoModal(props:any, productos:Producto[]) {
         )
     }
 
-    function getKeys() :Pedido[] {
+    function getKeys() :PedidoProducto[] {
         return Object.values(parProductoStock)
     }
 
@@ -88,7 +99,7 @@ export default function CrearProductoModal(props:any, productos:Producto[]) {
               <Form ref={formulario}>
                 {
                     getKeys().map(
-                      (p:Pedido, i:number) => filaProducto(p,i)
+                      (p:PedidoProducto, i:number) => filaProducto(p,i)
                       )
                 }
               </Form>

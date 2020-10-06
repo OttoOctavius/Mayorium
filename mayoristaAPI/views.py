@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.core import serializers
+from django.http import JsonResponse
 
 from mayoristaAPI.productoRepo import getAll, esProductoNuevo
 
@@ -13,10 +14,48 @@ from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 
+
+from django.forms.models import model_to_dict
+
+
+import json
+from bson import ObjectId
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+#JSONEncoder().encode(productos)
+
+class JSONResponse(HttpResponse):
+    """
+    An HttpResponse that renders its content into JSON.
+    """
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
 def index(request):
     return HttpResponse("Hello, world.")
 
 def productos(request):
+    productos = getAll()
+    
+    for pr in productos:
+        pr.pk = str(pr.pk)
+        pr.owner = None
+    serializer = ProductoSerializer(productos, many=True)
+
+    #print(serializer)
+    #jsonear = JSONRenderer().render(serializer.data)
+    return JSONResponse(serializer.data)
+    #return HttpResponse(JSONRenderer().render(serializer.data))
+#Para response: content_type="application/json",
+            #status=status.HTTP_401_UNAUTHORIZED,
+
+def pr2oductos(request):
     content = []
     for producto in getAll():
         serializer = ProductoSerializer(producto)
@@ -24,15 +63,19 @@ def productos(request):
     return HttpResponse(JSONRenderer().render(content))
 
 @api_view(['POST'])
-def newproducto(request):
+def newproducto(request, pk):
     if request.method != 'POST':
         return HttpResponse("no deberia pasar")
+    user = Mayorista.objects.get(_id=ObjectId(pk))
+    request.data['owner'] = user
     serializer = ProductoSerializer(data=request.data)
-    
-    if serializer.is_valid() and esProductoNuevo(serializer.validated_data["nombre"]):
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #serializer.addOwner(pk)
+    print(" pre valid")
+    serializer.is_valid(raise_exception=True) #and esProductoNuevo(serializer.validated_data["nombre"]):
+    print("post valid")
+    serializer.save()
+    return Response("serializer.data", status=status.HTTP_201_CREATED)
+    #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def register(request):
@@ -47,10 +90,11 @@ def register(request):
     print("hola")
     
     if serializer.is_valid():
-        serializer.save()
+        user = serializer.save()
+        user_json = serializers.serialize('json', [user])
         #mayorista = Mayorista.objects.create(user=serializer.validated_data)
         #mayorista.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(user_json, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -64,6 +108,7 @@ def getUser(request):
     password = request.data["password"]
     try:
         user = Mayorista.searchUser(email_,password)
+        user.pk = str(user.pk)
         user_json = serializers.serialize('json',[user]) #,fields=('fields') , fields=('_id') o user.clave
         #print(user._id)
         return Response(user_json, status=status.HTTP_200_OK) #, content_type="text/json-comment-filtered"
@@ -87,6 +132,7 @@ def pedidos(request):
 @api_view(['POST'])
 def newpedido(request):
     acum_serial = [ StockPedidoSerializer(data=datos) for datos in request.data ]
+    print(acum_serial)
     #transformarlo en un nuevo serializador Pedido
     creados = [ dict(stockser.create()) for stockser in acum_serial if stockser.is_valid()]
     print(creados)
@@ -103,4 +149,16 @@ def confirmarPedido(request):
     print(request.GET['clave'])
     return HttpResponse()
 
+@api_view(['POST'])
+def editarPedido(request):
+    acum_serial = [ StockPedidoSerializer(data=datos) for datos in request.data ]
+    #transformarlo en un nuevo serializador Pedido
+    creados = [ dict(stockser.create()) for stockser in acum_serial if stockser.is_valid()]
+    print(creados)
+
+    if len(creados)>0: # and all(list(map(acum_serial, lambda part: part.is_valid()))
+
+        return Response("ok", status=status.HTTP_200_OK)
+    return Response("Esta vacio", status=status.HTTP_400_BAD_REQUEST)
+    #return HttpResponse()
 

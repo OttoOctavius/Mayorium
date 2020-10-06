@@ -66,7 +66,7 @@ describe("<CrearProductoModal />", () => {
       await fireEvent.change(getByTestId("stock"), {target: {value:1}});
       await fireEvent.click(botonCrear);
     });
-
+    //TODO: no debe empezar con on..Success
     sendProducto.mockResolvedValueOnce(promesaTHENDa("ok"))
     expect(sendProducto).toHaveBeenCalled();
   });

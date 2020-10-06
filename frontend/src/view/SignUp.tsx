@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import {signUpMayorista} from '../api/mayorista';
+import {signUpMinorista} from '../api/minorista';
 import {User} from '../types/User';
+import { useHistory } from "react-router-dom";
 
 const SignUp : React.FC = (props) => {
     const [validated, setValidated] = useState(false);
-    
+    let history = useHistory();
     function handleSubmit(event:any){
         const form = event.currentTarget;
 
@@ -17,9 +19,10 @@ const SignUp : React.FC = (props) => {
         }
         else{
             const data = new FormData(form)
-            //if( data.get("first_name") === data.get("password2"))
+            
             if( data.get("password1") === data.get("password2")){
                 let user : User = {
+                    id: undefined,
                     first_name : data.get("first_name") as string,
                     last_name : data.get("last_name") as string,
                     contacto : parseInt(data.get("contacto") as string,10),
@@ -31,8 +34,22 @@ const SignUp : React.FC = (props) => {
                 data.delete("password1")
                 data.delete("password2")
                 console.log(user)*/
-                
-                signUpMayorista(user).then(console.log)
+                let signUpUsuario;
+                if( data.get("esMayorista") ){
+                    signUpMayorista(user).then(async (resp:any) => {
+                        let mayoristaResponse = JSON.parse(await resp)[0]
+                        console.log(mayoristaResponse) //TODO: poner el pk
+                        //props.logeado(124,mayoristaResponse.fields)
+                        history.push("/user")
+                    })
+                }else if( data.get("esMinorista") ){
+                    signUpMinorista(user).then(async (resp:any) => {
+                        let minoristaResponse = JSON.parse(await resp)[0]
+                        console.log(minoristaResponse) //TODO: poner el pk
+                        //props.logeado(124,mayoristaResponse.fields)
+                        history.push("")
+                    })
+                } else return;
             }
             else {
                 //debe fallar el formulario
@@ -48,7 +65,27 @@ const SignUp : React.FC = (props) => {
             <div className="auth-inner">
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <h3>Sign Up</h3>
-
+                <fieldset>
+                    <Form.Group as={Row}>
+                    <Form.Label as="legend" column sm={2}>
+                        Usuario
+                    </Form.Label>
+                    <Col sm={10}>
+                        <Form.Check
+                        type="radio"
+                        label="minorista"
+                        name="esMinorista"
+                        id="esMinorista"
+                        />
+                        <Form.Check
+                        type="radio"
+                        label="mayorista"
+                        name="esMayorista"
+                        id="esMayorista"
+                        />
+                    </Col>
+                    </Form.Group>
+                </fieldset>
                 <Form.Group className="form-group">
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control

@@ -1,7 +1,48 @@
 from rest_framework import serializers
 from mayoristaAPI.models import Producto, Mayorista
 
-class ProductoSerializer(serializers.Serializer):
+#str(durazno.pk)
+"""
+    def restore_object(self, attrs, instance=None):
+        if instance:
+            instance.pk = str(attrs.get('pk', instance.pk))
+            return instance
+        return Producto(**attrs)
+"""
+
+class ProductoSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='pk')
+    owner = serializers.ReadOnlyField()#source='owner')
+
+    class Meta:
+        model = Producto
+        exclude=['_id']
+    
+    def addOwner(self, id):
+        #user = Mayorista.objects.get(pk=id)
+        #print(user.id)
+        self.raw_data.owner = id#user.id
+
+    def create(self, validated_data):
+        return Producto.objects.create(**validated_data)
+    #mirar ser.errors si falla!
+
+    def validate(self, data):
+        print('validating')
+        if not Producto.esNuevo(data['nombre']):
+            raise serializers.ValidationError('Nombre corto o existente')
+        if data['stock'] <= 0:
+            raise serializers.ValidationError('No valen stocks negativos')
+        print('ok')
+        return data
+    def validate_owner(self, owner_id):
+        return owner_id
+
+
+
+
+class Pr3oductoSerializer(serializers.Serializer):
+    #_l
     nombre = serializers.CharField(required=True, allow_blank=False, max_length=100)
     precio = serializers.IntegerField(default=0)
     precioPublico = serializers.IntegerField(default=0)
@@ -19,6 +60,7 @@ class ProductoSerializer(serializers.Serializer):
         return instance
 
 class MayoristaSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField(source='pk')
     first_name = serializers.CharField(required=True, allow_blank=False, max_length=100)
     last_name = serializers.CharField(required=True, allow_blank=False, max_length=100)
     username = serializers.CharField(required=True, allow_blank=False, max_length=100)
@@ -44,7 +86,7 @@ class PartidaSerializer(serializers.Serializer):
     
     def validate(self, data):
         if data['stock'] <= 0:
-            raise serializers.ValidationError("No valen stocks negativos")
+            raise serializers.ValidationError('No valen stocks negativos')
         return data
 
 class StockPedidoSerializer(serializers.Serializer):
@@ -54,16 +96,16 @@ class StockPedidoSerializer(serializers.Serializer):
     
     def validate(self, data):
         if data['stock'] <= 0:
-            raise serializers.ValidationError("No valen stocks negativos")
+            raise serializers.ValidationError('No valen stocks negativos')
         return data
 
     def create(self):
         print(self.data)
         validated_data = self.data
         return {
-            'nombre':validated_data["nombre"],
-            'id':  validated_data["id"],
-            'stock':   validated_data["stock"],
+            'nombre':validated_data['nombre'],
+            'id':  validated_data['id'],
+            'stock':   validated_data['stock'],
         }
 """
 class PedidoSerializer(serializers.ModelSerializer):

@@ -1,5 +1,5 @@
 import { Producto } from "../model/Producto";
-import { User, UserLogin } from '../types/User';
+import { User, UserLogin, cargarUsuario } from '../types/User';
 
 export const getProductos = async () => {
     const response = await fetch("mayorista/productos", {
@@ -8,7 +8,7 @@ export const getProductos = async () => {
 }
 
 export const sendProducto = async (producto:Producto) => { //FormData
-    const response = await fetch("mayorista/producto", {
+    const response = await fetch("mayorista/producto/" + cargarUsuario() , {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -29,7 +29,8 @@ type Pedido = any
 export const getPedidos = async () => {
     const response = await fetch("mayorista/pedidos", {
         method: 'GET'})
-    return response.json()
+    //viene diferente a productos, se pre procesa aqui para dejarlo similar al type
+    return response.json().then((res:any) => res.map((ped:any) => { return {...ped.fields, pk:ped.pk}}))
 }
 
 export const sendPedido = async (pedido:Pedido) => {
@@ -87,7 +88,7 @@ export const signUpMayorista = async (formulario:User) => {
     })
     if(response.status === 201 || response.status === 400) //resultados esperados
         return new Promise((resolve, reject) => { //return response.json()
-            if(response.status === 201) resolve("¡Éxito!")//se creo correctamente
+            if(response.status === 201) resolve(response.json())//se creo correctamente
             if(response.status === 400) reject("esta mal pero no tanto") //fallo por validacion o repeticion
         })
     else

@@ -36,6 +36,7 @@ export default function CrearProductoModal(props:any) { //: React.FC<Props>
         if(precio && precio > 0) prod.precio = precio;
         if(precioPublico && precioPublico > 0) prod.precioPublico = precioPublico;
         if(stock && stock > 0) prod.stock = stock;
+        
         /*
         let formProducto = ReactDOM.findDOMNode(formulario.current);
         
