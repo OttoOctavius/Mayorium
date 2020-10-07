@@ -100,13 +100,13 @@ class StockPedidoSerializer(serializers.Serializer):
         return data
 
     def create(self):
-        print(self.data)
         validated_data = self.data
         return {
             'nombre':validated_data['nombre'],
             'id':  validated_data['id'],
             'stock':   validated_data['stock'],
         }
+
 """
 class PedidoSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True, allow_blank=False, max_length=100)

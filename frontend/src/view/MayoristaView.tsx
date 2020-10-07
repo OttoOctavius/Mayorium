@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Button, InputGroup } from "react-bootstrap";
+import { Container, Row, Col, Button, InputGroup } from "react-bootstrap";
 import DividirProductos from "../component/DividirProductos";
 import CrearProductoModal from "../component/CrearProductoModal";
 import {HacerPedidoModal, EditarPedidoModal} from "../component/HacerPedidoModal";
 import {getProductos, getPedidos, confirmarPedido} from "../api/mayorista";
 import { Producto } from "../model/Producto";
-import { PedidoStock } from "../types/Pedido";
+import { PedidoStock, PedidoProducto } from "../types/Pedido";
 
 const MayoristaView : React.FC = (props) => {
     const [producto_modalShow, producto_setModalShow] = React.useState(false);
@@ -67,10 +67,18 @@ const MayoristaView : React.FC = (props) => {
             <> 
             <InputGroup className="mb-3">
                 <InputGroup.Prepend>
-                    <InputGroup.Text id="basic-addon1">{p? "pedido(" + p.pk + ")": ""}</InputGroup.Text>
+                    <InputGroup.Text id="basic-addon1">{p? "pedido(" + p.id + ")": ""}</InputGroup.Text>
                 </InputGroup.Prepend>
-                <InputGroup.Text id="basic-addon1">{Object.values(p.productos)}</InputGroup.Text>
-                <Button variant="primary" onClick={() => confirmarPedido(p.pk)}>Confirmar</Button>
+                <InputGroup.Text id="basic-addon1">
+                    {Object.values(p.productos).map( (prStock:any,indice) =>(
+                        <>
+                        <Col>Nombre:{prStock.nombre}</Col>
+                        <Col>Stock: {prStock.stock}</Col>
+                        </>
+                    ))
+                    }
+                </InputGroup.Text>
+                <Button variant="primary" onClick={() => confirmarPedido(p.id)}>Confirmar</Button>
                 <Button variant="primary" onClick={() => pedidoEditar_setModalShow(true)}>Editar</Button>
                 <EditarPedidoModal
                     show={pedidoEditar_modalShow}

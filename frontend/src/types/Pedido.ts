@@ -13,5 +13,7 @@ export function newPedidoProducto(pr:Producto) : PedidoProducto {
 
 export interface PedidoStock{
     id: string | undefined
+    mayorista: string | null
+    distribuidor: string | null
     productos : PedidoProducto[]
 }

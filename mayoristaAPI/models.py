@@ -21,7 +21,6 @@ def sinSedes():
     return {}
 
 class Sede(models.Model):
-    
     ubicacion = models.CharField(max_length=100)
     #stock = [models.EmbeddedField(model_container=Partida)]
 
@@ -96,6 +95,8 @@ class Producto(models.Model):
     
     def getAll():
         return Producto.objects.all()
+    def getById(id):
+        return Producto.objects.get(_id=ObjectId(id))
 
     def esNuevo(nombre):
         if(len(nombre)>0):
@@ -117,9 +118,10 @@ class StockPedido(models.Model):
 
 class Pedido(models.Model):
     _id = models.ObjectIdField()
-    #readonly_fields = ('id',)
-    mayorista = models.CharField(max_length=12)#models.ObjectIdField()
+    
+    mayorista = models.ForeignKey(Mayorista, on_delete=models.CASCADE)
     distribuidor = models.CharField(max_length=12)#models.ObjectIdField()
+    readonly_fields = ('id', 'mayorista', 'distribuidor')
     #EmbeddedField
     productos = models.ArrayField(
         model_container=StockPedido,
@@ -128,6 +130,8 @@ class Pedido(models.Model):
 
     def getAll():
         return Pedido.objects.all()
+    def getById(id):
+        return Pedido.objects.get(_id=ObjectId(id))
 
-    def crearPedido(arrayStock):
-        return Pedido.objects.create(mayorista="mayorista", distribuidor="distribuidor", productos=arrayStock)
+    def crearPedido(arrayStock, mayorista):
+        return Pedido.objects.create(mayorista=mayorista, distribuidor="distribuidor", productos=arrayStock)

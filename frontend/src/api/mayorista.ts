@@ -30,11 +30,14 @@ export const getPedidos = async () => {
     const response = await fetch("mayorista/pedidos", {
         method: 'GET'})
     //viene diferente a productos, se pre procesa aqui para dejarlo similar al type
-    return response.json().then((res:any) => res.map((ped:any) => { return {...ped.fields, pk:ped.pk}}))
+    return response.text().then(JSON.parse)
+        .then(res=>res.map((r:any)=> {r.fields.id=r.pk; r.fields.productos = JSON.parse(r.fields.productos); return r.fields}))
+        .then(r=>{console.log(r);return r});
+        //.then((res:any) => res.map((ped:any) => { return {...ped.fields, pk:ped.pk}}));
 }
 
 export const sendPedido = async (pedido:Pedido) => {
-    const response = await fetch("mayorista/newpedido", {
+    const response = await fetch("mayorista/newpedido/" + cargarUsuario(), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -51,7 +54,7 @@ export const sendPedido = async (pedido:Pedido) => {
 }
 
 export const confirmarPedido = async (clave:string) => {
-    const response = await fetch("mayorista/pedido/confirmar?clave=" + clave, {
+    const response = await fetch("mayorista/pedido/confirmar/" + clave, {
         method: 'GET'})
     //return response.json()
 }

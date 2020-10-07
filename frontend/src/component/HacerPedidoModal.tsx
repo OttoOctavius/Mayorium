@@ -16,7 +16,7 @@ import { editarPedido } from "../api/pedidos";
 
 export function HacerPedidoModal(props:any) {
     let pares = props.productos.map(newPedidoProducto)
-    console.log(props.productos)
+    //console.log(props.productos)
     return PedidoModal(props, Object.assign({}, pares), sendPedido)
 }
 
@@ -24,12 +24,17 @@ export function EditarPedidoModal(props:any) {
     let pares = Object.assign({}, props.productos.map(newPedidoProducto))
     let productosPrevios = props.pedido.productos
     let arrPrevios = Object.values(productosPrevios)
-    //console.log(productosPrevios)
+    /*console.log("pares previos")
+    console.log(arrPrevios)
+    console.log("pares pedidos")*/
+
+    let dicPrevios = Object.assign({},...arrPrevios.map((key:any) => ({[key.id]: parseInt(key.stock)})));
+    //console.log(dicPrevios)
     let mapeo = Object.values(pares).map( (p:any) => {
-        return {...p//, stock:p.nombre===?stock:p.stock
+        return {...p , stock:dicPrevios[p.id]!==undefined?dicPrevios[p.id]:0
     }})
-    
-    return PedidoModal(props, mapeo, editarPedido)
+    console.log(props.pedido)
+    return PedidoModal(props, mapeo, (p:any) => editarPedido(props.pedido.id,p))
 }
 
 //Pedido[]=>Promise<any>
