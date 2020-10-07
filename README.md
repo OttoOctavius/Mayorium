@@ -12,3 +12,7 @@ Crear una plataforma e-commerce mayorista como alternativa al encierro por panda
 ### Objetivo
 
 Ofrecer servicio de simplificado de pedidos y un manejo de stock automatico.
+
+## Wiki
+Información de entregas, arquitectura e issues en el mismo repositorio, en:
+<a> https://github.com/OttoOctavius/Mayorium/wiki </a>
