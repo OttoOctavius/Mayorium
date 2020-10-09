@@ -1,5 +1,5 @@
 import { Producto } from "../model/Producto";
-import { User, UserLogin, cargarUsuario } from '../types/User';
+import { User, UserLogin, getUsuarioId } from '../types/User';
 
 export const getProductos = async () => {
     const response = await fetch("mayorista/productos", {
@@ -8,7 +8,7 @@ export const getProductos = async () => {
 }
 
 export const sendProducto = async (producto:Producto) => { //FormData
-    const response = await fetch("mayorista/producto/" + cargarUsuario() , {
+    const response = await fetch("mayorista/producto/" + getUsuarioId() , {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -32,12 +32,12 @@ export const getPedidos = async () => {
     //viene diferente a productos, se pre procesa aqui para dejarlo similar al type
     return response.text().then(JSON.parse)
         .then(res=>res.map((r:any)=> {r.fields.id=r.pk; r.fields.productos = JSON.parse(r.fields.productos); return r.fields}))
-        .then(r=>{console.log(r);return r});
+        //.then(r=>{console.log(r);return r});
         //.then((res:any) => res.map((ped:any) => { return {...ped.fields, pk:ped.pk}}));
 }
 
 export const sendPedido = async (pedido:Pedido) => {
-    const response = await fetch("mayorista/newpedido/" + cargarUsuario(), {
+    const response = await fetch("mayorista/newpedido/" + getUsuarioId(), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

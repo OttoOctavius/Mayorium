@@ -17,7 +17,7 @@ import { editarPedido } from "../api/pedidos";
 export function HacerPedidoModal(props:any) {
     let pares = props.productos.map(newPedidoProducto)
     //console.log(props.productos)
-    return PedidoModal(props, Object.assign({}, pares), sendPedido)
+    return PedidoModal(props, Object.assign({}, pares), sendPedido, "Crear")
 }
 
 export function EditarPedidoModal(props:any) {
@@ -34,11 +34,11 @@ export function EditarPedidoModal(props:any) {
         return {...p , stock:dicPrevios[p.id]!==undefined?dicPrevios[p.id]:0
     }})
     console.log(props.pedido)
-    return PedidoModal(props, mapeo, (p:any) => editarPedido(props.pedido.id,p))
+    return PedidoModal(props, mapeo, (p:any) => editarPedido(props.pedido.id,p), "Modificar")
 }
 
 //Pedido[]=>Promise<any>
-export default function PedidoModal(props:any, pedidoInicial:object, enviar:((pedidos:any)=>any)) {
+export default function PedidoModal(props:any, pedidoInicial:object, enviar:((pedidos:any)=>any), titulo:string) {
     const formulario = useRef(null)    
     const [parProductoStock, setParProductoStock] = useState({});
     const [huboFalla, setHuboFalla] = useState<string>("");
@@ -122,7 +122,7 @@ export default function PedidoModal(props:any, pedidoInicial:object, enviar:((pe
                 }
             </Col>
               <Col xs={2} md={1}>
-                  <Button variant="primary" onClick={onSend} type="submit"> Crear </Button>
+                  <Button variant="primary" onClick={onSend} type="submit"> {titulo} </Button>
               </Col>
           </Row>
           </Modal.Footer>

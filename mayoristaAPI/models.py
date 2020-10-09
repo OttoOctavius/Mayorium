@@ -82,6 +82,14 @@ class KeyVal(models.Model):
     value     = models.CharField(max_length=240, db_index=True)
 """
 
+class VarianteProducto(models.Model):
+    variante =  models.CharField(max_length=100)
+    stock = models.IntegerField(default=0, blank=True)
+    hide = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
 
 class Producto(models.Model):
     _id = models.ObjectIdField()
@@ -93,6 +101,11 @@ class Producto(models.Model):
     owner = models.ForeignKey(Mayorista, on_delete=models.CASCADE)
     readonly_fields = ('id','owner')
     
+    variantes = models.ArrayField(
+        model_container=VarianteProducto,
+        null=False
+    )
+
     def getAll():
         return Producto.objects.all()
     def getById(id):
@@ -107,31 +120,3 @@ class Producto(models.Model):
         return self.nombre #+ '('+ self.id.to_string() +')'
         #{'nombre': self.nombre, 'precio': self.precio} #.to_string()
     #dict no tiene conversion, hay que usar la de JSON
-
-class StockPedido(models.Model):
-    id = models.ObjectIdField(Producto, null=False) #si se borra este tambien
-    nombre =  models.CharField(max_length=100)
-    stock = models.IntegerField(default=0)
-
-    class Meta:
-        abstract = True
-
-class Pedido(models.Model):
-    _id = models.ObjectIdField()
-    
-    mayorista = models.ForeignKey(Mayorista, on_delete=models.CASCADE)
-    distribuidor = models.CharField(max_length=12)#models.ObjectIdField()
-    readonly_fields = ('id', 'mayorista', 'distribuidor')
-    #EmbeddedField
-    productos = models.ArrayField(
-        model_container=StockPedido,
-        null=True
-    )
-
-    def getAll():
-        return Pedido.objects.all()
-    def getById(id):
-        return Pedido.objects.get(_id=ObjectId(id))
-
-    def crearPedido(arrayStock, mayorista):
-        return Pedido.objects.create(mayorista=mayorista, distribuidor="distribuidor", productos=arrayStock)

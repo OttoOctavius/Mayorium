@@ -9,11 +9,15 @@ export interface User {
     password : string
 };
 
-export const cargarUsuario = () => {
+export const getUsuarioId = () => {
+    return cargarUsuario().id
+}
+
+export const cargarUsuario : ()=>User= () => {
     let userString = localStorage.getItem("user");
     if(userString == null) return "null";
     let user =  JSON.parse(userString);
-    return user.id
+    return user
 }
 
 export interface UserLogin {

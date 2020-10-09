@@ -14,13 +14,16 @@ const MayoristaView : React.FC = (props) => {
 
     const [productos, setProductos] = useState<Producto[]>([])
     const [pedidos, setPedidos] = useState<PedidoStock[]>([])
-
+    const [pedidoEditable, setPedidoEditable] = useState<PedidoStock|undefined>()
     const elemxFila = 3;
     const anchoTarjeta = 12 / elemxFila;
 
     const cargarProductos = () => getProductos().then(setProductos);
     const cargarPedidos = () => getPedidos().then(setPedidos)
 
+    const confirmaryActualizar = (id:string) =>{
+        confirmarPedido(id).then(()=>{cargarProductos();cargarPedidos();})
+    }
         // (res:any) => setPedidos(res.map((ped:any) => { return {...ped.fields, pk:ped.pk}})));
 
     useEffect( ()=>{
@@ -62,7 +65,15 @@ const MayoristaView : React.FC = (props) => {
             onSuccess={()=>{cargarPedidos();pedidoCrear_setModalShow(false);}}
             productos={productos}
         />
-
+        {pedidoEditable === undefined? <></>:
+            <EditarPedidoModal
+                show={pedidoEditar_modalShow}
+                onHide={() => pedidoEditar_setModalShow(false)}
+                onSuccess={()=>{cargarPedidos();pedidoEditar_setModalShow(false);}}
+                productos={productos}
+                pedido={pedidoEditable}
+            />
+        }
         {pedidos.map((p:any) => (
             <> 
             <InputGroup className="mb-3">
@@ -78,15 +89,8 @@ const MayoristaView : React.FC = (props) => {
                     ))
                     }
                 </InputGroup.Text>
-                <Button variant="primary" onClick={() => confirmarPedido(p.id)}>Confirmar</Button>
-                <Button variant="primary" onClick={() => pedidoEditar_setModalShow(true)}>Editar</Button>
-                <EditarPedidoModal
-                    show={pedidoEditar_modalShow}
-                    onHide={() => pedidoEditar_setModalShow(false)}
-                    onSuccess={()=>{cargarPedidos();pedidoEditar_setModalShow(false);}}
-                    productos={productos}
-                    pedido={p}
-                />
+                <Button variant="primary" onClick={()=>confirmaryActualizar(p.id)}>Confirmar</Button>
+                <Button variant="primary" onClick={() => {pedidoEditar_setModalShow(true);setPedidoEditable(p);}}>Editar</Button>
             </InputGroup>
             <br />
             </>
