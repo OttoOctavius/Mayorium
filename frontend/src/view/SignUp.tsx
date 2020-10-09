@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 
 const SignUp : React.FC = (props) => {
     const [validated, setValidated] = useState(false);
+    const [esMayorista, setEsMayorista] = useState(true);
     let history = useHistory();
     function handleSubmit(event:any){
         const form = event.currentTarget;
@@ -34,22 +35,21 @@ const SignUp : React.FC = (props) => {
                 data.delete("password1")
                 data.delete("password2")
                 console.log(user)*/
-                let signUpUsuario;
-                if( data.get("esMayorista") ){
+                if( esMayorista ){
                     signUpMayorista(user).then(async (resp:any) => {
                         let mayoristaResponse = JSON.parse(await resp)[0]
                         console.log(mayoristaResponse) //TODO: poner el pk
                         //props.logeado(124,mayoristaResponse.fields)
                         history.push("/user")
                     })
-                }else if( data.get("esMinorista") ){
+                }else{
                     signUpMinorista(user).then(async (resp:any) => {
                         let minoristaResponse = JSON.parse(await resp)[0]
                         console.log(minoristaResponse) //TODO: poner el pk
                         //props.logeado(124,mayoristaResponse.fields)
                         history.push("")
                     })
-                } else return;
+                }
             }
             else {
                 //debe fallar el formulario
@@ -72,16 +72,19 @@ const SignUp : React.FC = (props) => {
                     </Form.Label>
                     <Col sm={10}>
                         <Form.Check
-                        type="radio"
-                        label="minorista"
-                        name="esMinorista"
-                        id="esMinorista"
+                            type="radio"
+                            label="minorista"
+                            name="usuario"
+                            id="esMinorista"
+                            onChange={(e:any)=>setEsMayorista(false)}
                         />
                         <Form.Check
-                        type="radio"
-                        label="mayorista"
-                        name="esMayorista"
-                        id="esMayorista"
+                            type="radio"
+                            label="mayorista"
+                            name="usuario"
+                            id="esMayorista"
+                            defaultChecked={true}
+                            onChange={(e:any)=>setEsMayorista(true)}
                         />
                     </Col>
                     </Form.Group>

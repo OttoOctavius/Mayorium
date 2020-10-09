@@ -41,7 +41,7 @@ def getUser(request):
     email_ = request.data["email"]
     password = request.data["password"]
     try:
-        user = Mayorista.searchUser(email_,password)
+        user = User.objects.get(email=email_)
         user_json = serializers.serialize('json',[user]) #,fields=('fields') , fields=('_id') o user.clave
         #print(user._id)
         return Response(user_json, status=status.HTTP_200_OK) #, content_type="text/json-comment-filtered"

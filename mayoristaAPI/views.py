@@ -4,11 +4,8 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import JsonResponse
 
-from mayoristaAPI.productoRepo import getAll, esProductoNuevo
-
-from mayoristaAPI.models import Producto, Mayorista, Pedido
-from mayoristaAPI.serializers import ProductoSerializer, MayoristaSerializer, StockPedidoSerializer
-from mayoristaAPI.pedido.serializers import PedidoSerializer
+from mayoristaAPI.models import Producto, Mayorista
+from mayoristaAPI.serializers import ProductoSerializer, MayoristaSerializer
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -43,11 +40,12 @@ def index(request):
     return HttpResponse("Hello, world.")
 
 def productos(request):
-    productos = getAll()
+    productos = Producto.getAll()
     
     for pr in productos:
         pr.pk = str(pr.pk)
         pr.owner = None
+    print('bien')
     serializer = ProductoSerializer(productos, many=True)
 
     #print(serializer)
@@ -69,7 +67,8 @@ def newproducto(request, pk):
     if request.method != 'POST':
         return HttpResponse("no deberia pasar")
     user = Mayorista.objects.get(_id=ObjectId(pk))
-    request.data['owner'] = user
+    request.data['owner_id'] = user
+    request.data['variantes'] = []
     serializer = ProductoSerializer(data=request.data)
     #serializer.addOwner(pk)
     print(" pre valid")
@@ -86,10 +85,7 @@ def register(request):
     #pass2 = request.POST['password2']
     #if pass1 != pass2:
     #    return Response("Contraseñas no coinciden", status=status.HTTP_400_BAD_REQUEST)
-    print(request.data)
     serializer = MayoristaSerializer(data=request.data) #.get("form_data")
-    print(serializer)
-    print("hola")
     
     if serializer.is_valid():
         user = serializer.save()
@@ -119,73 +115,3 @@ def getUser(request):
         return Response("Parametros incorrectos", status=status.HTTP_400_BAD_REQUEST)
     #except:
     #    return Response("Parametros incorrectos", status=status.HTTP_400_BAD_REQUEST)
-
-#@api_view(['GET'])
-def pedidos(request):
-    pedidos = Pedido.getAll()
-    for pr in pedidos:
-        pr.pk = str(pr.pk)
-        pr.mayorista = None
-    #serializer = PedidoSerializer(pedidos, many=True)
-    #print(pedidos)
-    #print(serializer)
-    #jsonear = JSONRenderer().render(serializer.data)
-    return HttpResponse(serializers.serialize('json', pedidos))
-    #return JSONResponse(serializers.serialize('json', Pedido.getAll())) #HttpResponse
-    """
-    #1 intento
-    content = [ serializers.serialize('json',[pedido]) for pedido in Pedido.getAll() ]
-    return HttpResponse(content)
-    #2 intento
-    content  = [ pedido for pedido in Pedido.getAll() ]
-    return HttpResponse(JSONRenderer().render(**content))
-    """
-@api_view(['POST'])
-def newpedido(request, pk):
-    acum_serial = [ StockPedidoSerializer(data=datos) for datos in request.data ]
-    print(acum_serial)
-    #transformarlo en un nuevo serializador Pedido
-    creados = [ dict(stockser.create()) for stockser in acum_serial if stockser.is_valid()]
-    print(creados)
-
-    if len(creados)>0: # and all(list(map(acum_serial, lambda part: part.is_valid()))
-        print("hay mas de 1 partida")
-        user = Mayorista.objects.get(_id=ObjectId(pk))
-        Pedido.crearPedido(creados, user).save()
-        
-        return Response("ok", status=status.HTTP_201_CREATED)
-    return Response("no", status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def confirmarPedido(request, pk):
-    pedido = Pedido.getById(pk)
-    print(pedido)
-    #mayorista = Mayorista.searchByObjectId(pedido.mayorista_id)
-    for parProductoStock in pedido.productos:
-        productoAfectado = Producto.getById(parProductoStock["id"])
-        productoAfectado.stock += parProductoStock["stock"]
-        productoAfectado.save()
-    pedido.delete()
-    #productosAfectados = Producto.objects.filter(owner_id=pedido.mayorista_id)
-    
-    #print(productosAfectados)
-    #print(mayorista)
-    return HttpResponse()
-
-@api_view(['PUT'])
-def editarPedido(request, pk):
-    print("-----------------------")
-    acum_serial = [ StockPedidoSerializer(data=datos) for datos in request.data ]
-    #transformarlo en un nuevo serializador Pedido
-    creados = [ dict(stockser.create()) for stockser in acum_serial if stockser.is_valid()]
-    print(creados)
-
-    if len(creados)>0: # and all(list(map(acum_serial, lambda part: part.is_valid()))
-        #modificar el pedido
-        pedidoAnterior = Pedido.objects.get(_id=ObjectId(pk))
-        pedidoAnterior.productos = creados
-        pedidoAnterior.save()
-        return Response("ok", status=status.HTTP_200_OK)
-    return Response("Esta vacio", status=status.HTTP_400_BAD_REQUEST)
-    #return HttpResponse()
-

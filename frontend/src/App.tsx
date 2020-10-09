@@ -7,12 +7,13 @@ import SignUp from './view/SignUp';
 //import history from "./utils/history";
 import { Navbar, Nav, Form } from 'react-bootstrap';
 import { Switch, Route, useHistory, BrowserRouter as Router} from 'react-router-dom';
-//import { createBrowserHistory } from "history";
-
+import { User, UserLogin, cargarUsuario } from './types/User';
 
 const App : React.FC = (props:any) => {
   //let history = useHistory();
   const [ruta, setRuta] = useState<string>("/");
+  const [esMayorista, setEsMayorista] = useState<boolean|undefined>();
+  const [usuario, setUsuario] = useState<User|undefined>();
   //let location = useLocation();
 
   const logeo = (n:number,a:object) => {
@@ -21,7 +22,11 @@ const App : React.FC = (props:any) => {
 
   React.useEffect(() => {
     //history.push(ruta)
-  }, [ruta]);
+    if(esMayorista===undefined)
+      setUsuario(undefined);
+    else
+      setUsuario(cargarUsuario())
+  }, [esMayorista]);//ruta
 
   return (
     <div className="App">
@@ -45,13 +50,23 @@ const App : React.FC = (props:any) => {
           </Navbar.Brand>
           <Nav className="mr-auto">
             <Form inline>
-              <Nav.Link href="user">Mayorista</Nav.Link>
+              {esMayorista && <Nav.Link href="user">Mayorista</Nav.Link>}
               <Nav.Link href="/">Minorista</Nav.Link>
             </Form>
           </Nav>
           <Navbar.Brand href="mr-auto">
-              <Nav.Link href="sign-in">Login</Nav.Link>
-              <Nav.Link href="sign-up">Sign up</Nav.Link>
+              {usuario===undefined?
+                <>
+                  <Nav.Link href="sign-in">Login</Nav.Link>
+                  <Nav.Link href="sign-up">Sign up</Nav.Link>
+                </>:
+                <>
+                  <Navbar.Text>
+                    Usuario: {usuario.username}
+                  </Navbar.Text>
+                  <Nav.Link href="/" onClick={()=>setEsMayorista(undefined)}>Log-out {usuario.email}</Nav.Link>
+                </>
+              }
           </Navbar.Brand>
           </Navbar>
         </header>
@@ -64,7 +79,7 @@ const App : React.FC = (props:any) => {
               <MayoristaView />
             </Route>
             <Route path="/sign-in">
-             <Login ></Login>
+             <Login logeado={setEsMayorista}></Login>
             </Route>
             <Route path="/sign-up" component={SignUp} />
         </Switch>

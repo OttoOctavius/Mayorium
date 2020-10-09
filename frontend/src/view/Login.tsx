@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import { signInMayorista } from '../api/mayorista';
 import { UserLogin } from '../types/User';
 
 import { useHistory } from "react-router-dom";
-/*
-export interface Props {
-    logeado: (clave:number, usuario:User) => void
-Props
-}*/
+import { signInMinorista } from "../api/minorista";
 
-const Login : React.FC = (props) => {
+export interface Props {
+    logeado: (esMayorista:boolean) => void
+}
+
+const Login : React.FC<Props> = (props) => {
     const [validated, setValidated] = useState(false);
+    const [esMayorista, setEsMayorista] = useState(true);
     let history = useHistory();
 
     function handleSubmit(event:any){
@@ -25,23 +26,41 @@ const Login : React.FC = (props) => {
         }
         else{
             const data = new FormData(form)
+            
             let email = data.get("email") as string
             let pass = data.get("password") as string
             if( email!== null && email.length !== 0 && pass!== null && pass.length !== 0 ){
                 let userlogin : UserLogin = {
                     email : email,
-                    password : pass  
+                    password : pass
                 }
-                signInMayorista(userlogin).then( async (resp:any) => {
-                    let mayoristaResponse = JSON.parse(await resp)[0];
-                    //TODO: poner el pk como id!
-                    mayoristaResponse.fields.id = mayoristaResponse.pk;
-                    //console.log(mayoristaResponse.fields)
+                if( esMayorista )
+                    signInMayorista(userlogin).then( async (resp:any) => {
+                        let mayoristaResponse = JSON.parse(await resp)[0];
+                        //TODO: poner el pk como id!
+                        mayoristaResponse.fields.id = mayoristaResponse.pk;
+                        //console.log(mayoristaResponse.fields)
 
-                    localStorage.setItem("user", JSON.stringify(mayoristaResponse.fields));
-                    //props.logeado(124,mayoristaResponse.fields)
-                    history.push("/user")
-                })
+                        localStorage.setItem("user", JSON.stringify(mayoristaResponse.fields));
+                        //props.logeado(124,mayoristaResponse.fields)
+                        history.push("/user");
+                        props.logeado(esMayorista);
+                    })
+                else
+                    signInMinorista(userlogin).then( async (resp:any) => {
+                        let minoristaResponse = JSON.parse(await resp)[0];
+                        //TODO: poner el pk como id!
+                        minoristaResponse.fields.id = minoristaResponse.pk;
+                        //console.log(mayoristaResponse.fields)
+
+                        localStorage.setItem("user", JSON.stringify(minoristaResponse.fields));
+                        //props.logeado(124,mayoristaResponse.fields)
+                        history.push("/");
+                        props.logeado(esMayorista);
+                    })
+                
+
+
             }
             setValidated(true);
         }
@@ -52,7 +71,30 @@ const Login : React.FC = (props) => {
             <div className="auth-inner">
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <h3>Sign In</h3>
-
+                <fieldset>
+                    <Form.Group as={Row}>
+                    <Form.Label as="legend" column sm={2}>
+                        Usuario
+                    </Form.Label>
+                    <Col sm={10}>
+                        <Form.Check
+                            type="radio"
+                            label="minorista"
+                            name="usuario"
+                            id="esMinorista"
+                            onChange={(e:any)=>setEsMayorista(false)}
+                        />
+                        <Form.Check
+                            type="radio"
+                            label="mayorista"
+                            name="usuario"
+                            id="esMayorista"
+                            defaultChecked={true}
+                            onChange={(e:any)=>setEsMayorista(true)}
+                        />
+                    </Col>
+                    </Form.Group>
+                </fieldset>
                 <Form.Group className="form-group">
                     <Form.Label>Correo</Form.Label>
                     <Form.Control 
