@@ -3,7 +3,7 @@ import { Container, Row, Col, Button, InputGroup } from "react-bootstrap";
 import DividirProductos from "../component/DividirProductos";
 import CrearProductoModal from "../component/CrearProductoModal";
 import {HacerPedidoModal, EditarPedidoModal} from "../component/HacerPedidoModal";
-import {getProductos, getPedidos, confirmarPedido} from "../api/mayorista";
+import {getProductosMayo, getPedidos, confirmarPedido} from "../api/mayorista";
 import { Producto } from "../model/Producto";
 import { PedidoStock, PedidoProducto } from "../types/Pedido";
 
@@ -18,7 +18,7 @@ const MayoristaView : React.FC = (props) => {
     const elemxFila = 3;
     const anchoTarjeta = 12 / elemxFila;
 
-    const cargarProductos = () => getProductos().then(setProductos);
+    const cargarProductos = () => getProductosMayo().then(setProductos);
     const cargarPedidos = () => getPedidos().then(setPedidos)
 
     const confirmaryActualizar = (id:string) =>{
@@ -36,7 +36,7 @@ const MayoristaView : React.FC = (props) => {
     <Row>
         <br />
 
-        <Button variant="primary" onClick={() => producto_setModalShow(true)}>
+        <Button variant="primary" onClick={() => {producto_setModalShow(true);console.log(productos);}}>
             Crear Producto
         </Button>
 

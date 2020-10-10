@@ -22,8 +22,8 @@ class Pedido(models.Model):
         null=True
     )
 
-    def getAll():
-        return Pedido.objects.all()
+    def getFrom(id):
+        return Pedido.objects.filter(mayorista_id=ObjectId(id))
     def getById(id):
         return Pedido.objects.get(_id=ObjectId(id))
 

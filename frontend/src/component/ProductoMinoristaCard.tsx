@@ -1,19 +1,27 @@
-import React from "react";
-import { Row, Col, Button, Card } from "react-bootstrap";
+import React, { DetailedHTMLProps } from "react";
+import { Row, Col, Button, Card, Image } from "react-bootstrap";
 import { Producto } from "../model/Producto";
+import { HtmlAttributes } from "csstype";
 
 type ProductoMinoristaCardProps = {
     producto : Producto
 }
 
 export const ProductoMinoristaCard : React.FC<ProductoMinoristaCardProps> = (props) => {
+    var sectionStyle = { //DetailedHTMLProps<HTMLAttributes<HTMLDivElement>,HTMLDivElement>
+        //backgroundImage: `url(${props.producto.imagen})`
+     } //<div styles={sectionStyle}></div>
+    //<Image src={props.producto.imagen} fluid></Image>
     return <>
+    
     <Card className="p-3 mb-2 bg-primary text-white">
         <Card.Body>
+            
             <Row>Producto: {props.producto.nombre}</Row>
             <Row>Precio: {props.producto.precio}</Row>
             <Row>Precio al publico: {props.producto.precioPublico}</Row>
             <Row>Stock: {props.producto.stock}</Row>
+            
         </Card.Body>
     </Card>
     </>

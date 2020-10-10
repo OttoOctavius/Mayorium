@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Row, Col, Button, InputGroup, Modal, Form } from "react-bootstrap";
+import React, { useState, useRef, useEffect } from "react";
+import { Row, Col, Button, InputGroup, Modal, Form, ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 //import ReactDOM from "react-dom";
 import { newProducto } from "../model/Producto";
 import { sendProducto } from "../api/mayorista";
@@ -26,17 +26,23 @@ export default function CrearProductoModal(props:any) { //: React.FC<Props>
     const [precio, setPrecio] = useState<number|undefined>();
     const [precioPublico, setPrecioPublico] = useState<number|undefined>();
     const [stock, setStock] = useState<number>(0);
+    const [imagen, setImagen] = useState<string|undefined>();
+    const [variantes, setVariantes] = useState<string[]>([]);
+    const [editvariante, setEditVariante] = useState<string|undefined>();
+    const [indiceVariante, setIndiceVariante] = useState<number|undefined>();
     const [huboFalla, setHuboFalla] = useState<string>("");
 
     const onSend = () => {
         setHuboFalla("");
         if(nombre === undefined || nombre.length === 0) return;
-
+        if(imagen === undefined || imagen.length === 0) return;
         let prod = newProducto(nombre);
         if(precio && precio > 0) prod.precio = precio;
         if(precioPublico && precioPublico > 0) prod.precioPublico = precioPublico;
         if(stock && stock > 0) prod.stock = stock;
-        
+        prod.imagen = imagen;
+        prod.variantes = variantes;
+        // = 'https://supermercado.carrefour.com.ar/media/catalog/product/cache/1/image/1000x/040ec09b1e35df139433887a97daa66f/7/7/7790040930605_01.jpg';
         /*
         let formProducto = ReactDOM.findDOMNode(formulario.current);
         
@@ -47,7 +53,45 @@ export default function CrearProductoModal(props:any) { //: React.FC<Props>
         */
         sendProducto(prod).then(props.onSuccess, setHuboFalla ).catch(setHuboFalla);
     }
-    
+    /*
+    useEffect(()=>{
+        setEditVariante("");
+    }, [variantes])*/
+
+    const agregarVariante = (e:any) => {
+        console.log("agregarVariante")
+        if(editvariante===undefined)return;
+        if(indiceVariante === undefined){ //primera vez que se ingresa
+            e.preventDefault()
+            setVariantes(variantes.concat([editvariante]));
+            setEditVariante(undefined);
+        }
+        else{//se tiene que modificar
+            let nuevos = variantes.map((v,i)=>i==indiceVariante?editvariante:v);
+            setVariantes(nuevos);
+            console.log(variantes)
+            setEditVariante(undefined);
+            setIndiceVariante(undefined);
+        }
+    }
+
+    const quitarVariante = () => {
+        console.log("quitarVariante")
+        if(indiceVariante === undefined){ //primera vez que se ingresa
+            setEditVariante(undefined);
+            console.log(editvariante)
+        }
+        else{
+            
+        }
+    }
+
+    const cambiarVariante = (idx:number) => {
+        console.log("cambiarVariante")
+        setIndiceVariante(indiceVariante);
+        setEditVariante(variantes[idx]);
+    }
+
     return (
       <Modal
         {...props}
@@ -112,6 +156,41 @@ export default function CrearProductoModal(props:any) { //: React.FC<Props>
                         data-testid="stock"
                         onChange={(e:any)=>setStock(e.currentTarget.value)}/>
                 </Form.Group>
+                <InputGroup className="mb-3">
+                    <InputGroup.Prepend>
+                    <InputGroup.Text id="basic-addon1">Imagen</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <Form.Control
+                        type="text"
+                        placeholder="URL imagen"
+                        defaultValue={imagen}
+                        
+                        data-testid="imagen"
+                        onChange={(e:any)=>setImagen(e.currentTarget.value)}
+                        ref={nombreRef}
+                        />
+                </InputGroup>
+                <Dropdown as={InputGroup} className="mb-3">
+                    <InputGroup.Prepend>
+                        <InputGroup.Text id="basic-addon1">Variantes</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <Form.Control
+                        type="text"
+                        placeholder="nueva variante producto"
+                        defaultValue={editvariante}
+                        data-testid="variantes"
+                        onChange={(e:any)=>setEditVariante(e.currentTarget.value)}
+                    />
+                    <Button variant="info" type="submit" onClick={agregarVariante}>+</Button>
+                    <Button variant="danger" onClick={quitarVariante}>-</Button>
+                    <Dropdown.Toggle split variant="success" id="dropdown-split-basic" />
+                        
+                    <Dropdown.Menu>
+                        {variantes.map((variante,indice) =>
+                        <Dropdown.Item key={indice} onClick={()=>cambiarVariante(indice)}>{variante}</Dropdown.Item>
+                        )}
+                    </Dropdown.Menu>
+                </Dropdown>
             </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -137,4 +216,4 @@ export default function CrearProductoModal(props:any) { //: React.FC<Props>
         </Modal.Footer>
       </Modal>
     );
-}
+} //defaultValue={editvariante===undefined?"":editvariante}

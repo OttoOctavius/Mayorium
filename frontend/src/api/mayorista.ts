@@ -4,7 +4,15 @@ import { User, UserLogin, getUsuarioId } from '../types/User';
 export const getProductos = async () => {
     const response = await fetch("mayorista/productos", {
         method: 'GET'})
-    return response.json()
+    //TODO:Arreglar esto del back
+    return response.json().then(prs=>prs.map((pr:any)=>{ return {...pr, variantes:JSON.parse(pr.variantes) } }))
+}
+
+export const getProductosMayo = async () => {
+    const response = await fetch("mayorista/productos/" + getUsuarioId(), {
+        method: 'GET'})
+    //TODO:Arreglar esto del back
+    return response.json().then(prs=>prs.map((pr:any)=>{ return {...pr, variantes:JSON.parse(pr.variantes) } }))
 }
 
 export const sendProducto = async (producto:Producto) => { //FormData
@@ -27,7 +35,7 @@ export const sendProducto = async (producto:Producto) => { //FormData
 type Pedido = any
 
 export const getPedidos = async () => {
-    const response = await fetch("mayorista/pedidos", {
+    const response = await fetch("mayorista/pedidos/" + getUsuarioId() , {
         method: 'GET'})
     //viene diferente a productos, se pre procesa aqui para dejarlo similar al type
     return response.text().then(JSON.parse)

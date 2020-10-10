@@ -9,14 +9,33 @@ from mayoristaAPI.models import Producto, Mayorista
             return instance
         return Producto(**attrs)
 """
+class VarianteProductoSerializer(serializers.Serializer):
+    variante =  serializers.CharField(required=True, allow_blank=False, max_length=100)
+    stock = serializers.IntegerField(default=0)
+    hide = serializers.BooleanField(default=False)
+    
+    def validate(self, data):
+        if len(data['variante']) > 0:
+            raise serializers.ValidationError('No es una variante valida. Muy corto')
+        return data
+
+    def create(self):
+        validated_data = self.data
+        return {
+            'variante':validated_data['variante'],
+            'stock':  validated_data['stock'],
+            'hide':   validated_data['hide'],
+        }
 
 class ProductoSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='pk')
     owner = serializers.ReadOnlyField()#source='owner')
+    owner_id = serializers.CharField(required=False, allow_blank=True, max_length=30)
+    #variantes = VarianteProductoSerializer(many=True, required=False)
 
     class Meta:
         model = Producto
-        exclude=['_id', 'variantes']
+        exclude=['_id'] #, 'variantes']
     
     def addOwner(self, id):
         #user = Mayorista.objects.get(pk=id)
@@ -25,6 +44,7 @@ class ProductoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Producto.objects.create(**validated_data)
+
     #mirar ser.errors si falla!
 
     def validate(self, data):

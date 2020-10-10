@@ -90,6 +90,9 @@ class VarianteProducto(models.Model):
     class Meta:
         abstract = True
 
+    def nuevaVariante(nombre):
+        return {'variante':nombre,'stock':0, 'hide':False}
+
 
 class Producto(models.Model):
     _id = models.ObjectIdField()
@@ -108,6 +111,8 @@ class Producto(models.Model):
 
     def getAll():
         return Producto.objects.all()
+    def getFrom(id):
+        return Producto.objects.filter(owner_id=ObjectId(id))
     def getById(id):
         return Producto.objects.get(_id=ObjectId(id))
 

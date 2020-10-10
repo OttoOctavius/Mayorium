@@ -38,8 +38,8 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 #@api_view(['GET'])
-def pedidos(request):
-    pedidos = Pedido.getAll()
+def pedidos(request, pk):
+    pedidos = Pedido.getFrom(pk)
     for pr in pedidos:
         pr.pk = str(pr.pk)
         pr.mayorista = None

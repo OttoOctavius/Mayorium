@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import JsonResponse
 
-from mayoristaAPI.models import Producto, Mayorista
+from mayoristaAPI.models import Producto, Mayorista, VarianteProducto
 from mayoristaAPI.serializers import ProductoSerializer, MayoristaSerializer
 
 from rest_framework.renderers import JSONRenderer
@@ -41,11 +41,13 @@ def index(request):
 
 def productos(request):
     productos = Producto.getAll()
-    
     for pr in productos:
         pr.pk = str(pr.pk)
+        pr.owner_id = str(pr.owner_id)
         pr.owner = None
-    print('bien')
+        #pr.variantes =  serializers.serialize('json', pr.variantes)
+        #print(len(pr.variantes))
+    
     serializer = ProductoSerializer(productos, many=True)
 
     #print(serializer)
@@ -55,26 +57,43 @@ def productos(request):
 #Para response: content_type="application/json",
             #status=status.HTTP_401_UNAUTHORIZED,
 
-def pr2oductos(request):
-    content = []
-    for producto in getAll():
-        serializer = ProductoSerializer(producto)
-        content.append(serializer.data)
-    return HttpResponse(JSONRenderer().render(content))
+
+def productos_mayo(request, pk):
+    productos = Producto.getFrom(pk)
+    for pr in productos:
+        pr.pk = str(pr.pk)
+        pr.owner_id = str(pr.owner_id)
+        pr.owner = None
+        #pr.variantes =  serializers.serialize('json', pr.variantes)
+        #print(len(pr.variantes))
+    
+    serializer = ProductoSerializer(productos, many=True)
+
+    #print(serializer)
+    #jsonear = JSONRenderer().render(serializer.data)
+    return JSONResponse(serializer.data)
 
 @api_view(['POST'])
 def newproducto(request, pk):
     if request.method != 'POST':
         return HttpResponse("no deberia pasar")
     user = Mayorista.objects.get(_id=ObjectId(pk))
-    request.data['owner_id'] = user
-    request.data['variantes'] = []
+    request.data['owner'] = user
+
+    request.data['variantes'] = [ VarianteProducto.nuevaVariante(variante) for variante in request.data['variantes']]
+    
     serializer = ProductoSerializer(data=request.data)
+    print(serializer)
     #serializer.addOwner(pk)
     print(" pre valid")
+    serializer.is_valid()
+    print(serializer.errors)
     serializer.is_valid(raise_exception=True) #and esProductoNuevo(serializer.validated_data["nombre"]):
     print("post valid")
-    serializer.save()
+    producto = serializer.save() #no debe ser create?
+    producto.variantes = request.data['variantes']
+    producto.owner_id = user.pk
+    producto.save()
     return Response("serializer.data", status=status.HTTP_201_CREATED)
     #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
