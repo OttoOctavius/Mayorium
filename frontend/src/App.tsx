@@ -6,7 +6,7 @@ import Login from './view/Login';
 import SignUp from './view/SignUp';
 //import history from "./utils/history";
 import { Navbar, Nav, Form } from 'react-bootstrap';
-import { Switch, Route, useHistory, BrowserRouter as Router} from 'react-router-dom';
+import { Switch, Route, useHistory, BrowserRouter as Router, Link} from 'react-router-dom';
 import { User, UserLogin, cargarUsuario } from './types/User';
 
 const App : React.FC = (props:any) => {
@@ -50,8 +50,9 @@ const App : React.FC = (props:any) => {
           </Navbar.Brand>
           <Nav className="mr-auto">
             <Form inline>
-              {esMayorista && <Nav.Link href="user">Mayorista</Nav.Link>}
-              <Nav.Link href="/">Minorista</Nav.Link>
+              {esMayorista && <Link to="user">Mayorista </Link>}
+              &nbsp;
+              <Link to="/"> Minorista </Link>
             </Form>
           </Nav>
           <Navbar.Brand href="mr-auto">

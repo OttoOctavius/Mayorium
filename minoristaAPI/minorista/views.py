@@ -42,6 +42,8 @@ def getUser(request):
     password = request.data["password"]
     try:
         user = User.objects.get(email=email_)
+        user.id = str(user.pk)
+        #print(user.id)
         user_json = serializers.serialize('json',[user]) #,fields=('fields') , fields=('_id') o user.clave
         #print(user._id)
         return Response(user_json, status=status.HTTP_200_OK) #, content_type="text/json-comment-filtered"

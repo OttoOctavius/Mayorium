@@ -10,6 +10,7 @@ class StockPedido(models.Model):
     class Meta:
         abstract = True
 
+#Orden para minorista
 class Pedido(models.Model):
     _id = models.ObjectIdField()
     

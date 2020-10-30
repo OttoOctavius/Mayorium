@@ -60,11 +60,12 @@ export default function CrearProductoModal(props:any) { //: React.FC<Props>
 
     const agregarVariante = (e:any) => {
         console.log("agregarVariante")
+        e.preventDefault()
         if(editvariante===undefined)return;
         if(indiceVariante === undefined){ //primera vez que se ingresa
             e.preventDefault()
             setVariantes(variantes.concat([editvariante]));
-            setEditVariante(undefined);
+            setEditVariante("");
         }
         else{//se tiene que modificar
             let nuevos = variantes.map((v,i)=>i==indiceVariante?editvariante:v);

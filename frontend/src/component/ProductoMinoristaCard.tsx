@@ -5,6 +5,7 @@ import { HtmlAttributes } from "csstype";
 
 type ProductoMinoristaCardProps = {
     producto : Producto
+    agregarProducto:(pr:Producto)=>void
 }
 
 export const ProductoMinoristaCard : React.FC<ProductoMinoristaCardProps> = (props) => {
@@ -22,6 +23,10 @@ export const ProductoMinoristaCard : React.FC<ProductoMinoristaCardProps> = (pro
             <Row>Precio al publico: {props.producto.precioPublico}</Row>
             <Row>Stock: {props.producto.stock}</Row>
             
+            <Row>
+                Agregar a pedido 
+                <Button variant="info" type="submit" onClick={e=>props.agregarProducto(props.producto)}>+</Button>
+            </Row>
         </Card.Body>
     </Card>
     </>

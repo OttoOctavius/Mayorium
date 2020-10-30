@@ -11,8 +11,8 @@ type ProductoMayoristaCardProps = {
 export const ProductoMayoristaCard : React.FC<ProductoMayoristaCardProps> = (props) => {
     return <>
     <Card className="p-3 mb-2 bg-primary text-white">
-    <Card.Img variant="top" src="https://source.unsplash.com/daily" />
-        <Card.Body className="card-img-overlay">
+        <Image src={props.producto.imagen} fluid alt="Responsive no se encuentra"/>
+        <Card.Body>
             <Row>Producto: {props.producto.nombre}</Row>
             <Row>Precio: {props.producto.precio}</Row>
             <Row>Precio al publico: {props.producto.precioPublico}</Row>
@@ -22,5 +22,7 @@ export const ProductoMayoristaCard : React.FC<ProductoMayoristaCardProps> = (pro
     </Card>
     </>
 }
-//<Image src={props.producto.imagen} fluid alt="Responsive no se encuentra"/>
+//className="card-img-overlay"
+//<Card.Img variant="top" src="https://source.unsplash.com/daily" />
+//
 //{props.producto.imagen.length>0 && ..imagen}

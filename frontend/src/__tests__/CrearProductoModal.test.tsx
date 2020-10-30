@@ -64,6 +64,7 @@ describe("<CrearProductoModal />", () => {
       await fireEvent.change(getByTestId("precio"), {target: {value:1}});
       await fireEvent.change(getByTestId("precio-publico"), {target: {value:1}});
       await fireEvent.change(getByTestId("stock"), {target: {value:1}});
+      await fireEvent.change(getByTestId("imagen"), {target: {value:"abc"}});
       await fireEvent.click(botonCrear);
     });
     //TODO: no debe empezar con on..Success

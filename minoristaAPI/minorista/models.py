@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Minorista(models.Model):
     readonly_fields = ('id',)
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     #first_name = models.CharField(max_length=100, default="", editable=False)
     #last_name = models.CharField(max_length=100, default="", editable=False)
     #username = models.CharField(max_length=100, default="", editable=False)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, InputGroup } from "react-bootstrap";
-import DividirProductos from "../component/DividirProductos";
+import {DividirProductosMayorista as DividirProductos} from "../component/DividirProductos";
 import CrearProductoModal from "../component/CrearProductoModal";
 import {HacerPedidoModal, EditarPedidoModal} from "../component/HacerPedidoModal";
 import {getProductosMayo, getPedidos, confirmarPedido} from "../api/mayorista";

@@ -44,7 +44,7 @@ def productos(request):
     for pr in productos:
         pr.pk = str(pr.pk)
         pr.owner_id = str(pr.owner_id)
-        pr.owner = None
+        #pr.owner = None
         #pr.variantes =  serializers.serialize('json', pr.variantes)
         #print(len(pr.variantes))
     

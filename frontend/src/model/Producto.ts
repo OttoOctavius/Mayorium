@@ -8,6 +8,8 @@ export interface Producto {
     precioPublico : number
     imagen: string
     variantes:string[]|VarianteProducto[]|undefined
+    owner: string | null | undefined
+    owner_id: string | null | undefined
 }
 
 export interface VarianteProducto {
@@ -27,7 +29,12 @@ export const mostrarVarianteProducto = (pr:Producto) =>{
 const varianteProductoToString = (vp:VarianteProducto) => vp.variante + '(' + vp.stock.toString() + ')';
 
 export function newProducto(nombre:string):Producto {
-    return {"nombre":nombre,precio:0,precioPublico:0,stock:0, id:undefined, _id:undefined, imagen:"", variantes:[]}
+    return {"nombre":nombre,precio:0,precioPublico:0,stock:0
+        ,id:undefined, _id:undefined
+        ,imagen:""
+        ,variantes:[]
+        ,owner:null
+        ,owner_id:null}
 }
 
 export interface LimiteCompra {

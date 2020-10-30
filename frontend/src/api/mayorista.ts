@@ -5,7 +5,7 @@ export const getProductos = async () => {
     const response = await fetch("mayorista/productos", {
         method: 'GET'})
     //TODO:Arreglar esto del back
-    return response.json().then(prs=>prs.map((pr:any)=>{ return {...pr, variantes:JSON.parse(pr.variantes) } }))
+    return response.json().then(prs=>prs.map((pr:any)=>{ console.log(pr);return {...pr, variantes:JSON.parse(pr.variantes) } }))
 }
 
 export const getProductosMayo = async () => {
