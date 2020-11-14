@@ -1,6 +1,7 @@
 from djongo import models
 from bson.objectid import ObjectId
-from mayoristaAPI.models import Mayorista, Producto
+from ..mayorista.models import Mayorista
+from ..producto.models import Producto
 
 class StockPedido(models.Model):
     id = models.ObjectIdField(Producto, null=False) #si se borra este tambien

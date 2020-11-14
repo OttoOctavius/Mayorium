@@ -16,6 +16,7 @@ export const ProductoMinoristaCard : React.FC<ProductoMinoristaCardProps> = (pro
     return <>
     
     <Card className="p-3 mb-2 bg-primary text-white">
+        <Image src={props.producto.imagen} fluid alt="Responsive no se encuentra"/>
         <Card.Body>
             
             <Row>Producto: {props.producto.nombre}</Row>

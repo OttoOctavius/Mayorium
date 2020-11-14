@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import JsonResponse
 
-from mayoristaAPI.models import Mayorista
+from mayoristaAPI.mayorista.models import Mayorista
 from mayoristaAPI.pedido.models import Pedido, Producto
 from mayoristaAPI.pedido.serializers import StockPedidoSerializer, PedidoSerializer
 

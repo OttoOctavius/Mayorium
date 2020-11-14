@@ -1,6 +1,7 @@
 import { Producto } from "../model/Producto";
 import { User, UserLogin, getUsuarioId } from '../types/User';
 import { PedidoOrdenCompra } from "../types/Pedido";
+import { respuestaOk, respuestaCrear } from "./response";
 
 export const signInMinorista = async (formulario:UserLogin) => { //FormData
     const response = await fetch("minorista/sign-in", {
@@ -9,14 +10,8 @@ export const signInMinorista = async (formulario:UserLogin) => { //FormData
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(formulario),
-    })
-    if(response.status === 200 || response.status === 400) //resultados esperados
-        return new Promise((resolve, reject) => {
-            if(response.status === 200) resolve(response.json())//se creo correctamente
-            if(response.status === 400) reject("response") //fallo por validacion o repeticion
-        })
-    else
-        return Promise.reject("fallo")
+    });
+    return respuestaOk(response);
 }
 
 export const signUpMinorista = async (formulario:User) => {
@@ -31,14 +26,8 @@ export const signUpMinorista = async (formulario:User) => {
                 "form_data":formulario
             }
         ) //JSON.stringify(formulario),*/
-    })
-    if(response.status === 201 || response.status === 400) //resultados esperados
-        return new Promise((resolve, reject) => { //return response.json()
-            if(response.status === 201) resolve(response.json())//se creo correctamente
-            if(response.status === 400) reject("esta mal pero no tanto") //fallo por validacion o repeticion
-        })
-    else
-        return Promise.reject("fallo")
+    });
+    return respuestaCrear(response);
 }
 
 export const getPedidos = async () => {
@@ -60,15 +49,23 @@ export const sendPedido = async (pedido:PedidoOrdenCompra) => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(pedido),
-    })
-    if(response.status === 201 || response.status === 400)
-        return new Promise((resolve, reject) => {
-        if(response.status === 201) resolve(response)
-        if(response.status === 400) reject("Datos invalidos")
-    })
-    else
-        return Promise.reject("fallo")
+    });
+    return respuestaCrear(response);
 }
+
+export const editarPedido = async (pedido:PedidoOrdenCompra) => {
+    let usuario = getUsuarioId();
+    pedido.minorista = usuario?usuario:null;
+    const response = await fetch("minorista/ordencompra/" + usuario, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pedido)
+    });
+    return respuestaOk(response);
+}
+
 
 export const confirmarPedido = async (clave:string) => {
     const response = await fetch("minorista/ordencompra/confirmar/" + clave, {

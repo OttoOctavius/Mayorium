@@ -1,7 +1,9 @@
 from djongo import models
 from bson.objectid import ObjectId
-from mayoristaAPI.models import Mayorista, Producto
+from mayoristaAPI.mayorista.models import Mayorista
+from mayoristaAPI.producto.models import Producto
 from minoristaAPI.minorista.models import Minorista
+
 from django.contrib.auth.models import User
 
 class StockSolicitado(models.Model):
@@ -14,9 +16,13 @@ class StockSolicitado(models.Model):
 
 class OrdenCompra(models.Model):
     _id = models.ObjectIdField()
-    minorista = models.ForeignKey(User, on_delete=models.CASCADE)
-    mayorista = models.ForeignKey(Mayorista, on_delete=models.CASCADE)
     
+    minorista = models.ForeignKey(User, on_delete=models.CASCADE)
+    minorista_aprobo = models.BooleanField(default=False)
+
+    mayorista = models.ForeignKey(Mayorista, on_delete=models.CASCADE)
+    mayorista_aprobo = models.BooleanField(default=False)
+
     readonly_fields = ('id', 'minorista', 'mayorista')
     #EmbeddedField
     productos = models.ArrayField(

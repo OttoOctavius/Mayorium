@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import JsonResponse
 
-from mayoristaAPI.models import Mayorista, Producto
+from mayoristaAPI.mayorista.models import Mayorista
+from mayoristaAPI.producto.models import Producto
 
 from minoristaAPI.minorista.models import Minorista
 from minoristaAPI.ordencompra.models import OrdenCompra
@@ -44,7 +45,7 @@ def ordencompras(request, pk):
     ordencompras = OrdenCompra.getFrom(pk)
     for pr in ordencompras:
         pr.pk = str(pr.pk)
-        pr.mayorista = str(pr.mayorista)
+        #pr.mayorista = str(pr.mayorista_id)
     return HttpResponse(serializers.serialize('json', ordencompras))
 
 @api_view(['POST'])
@@ -68,6 +69,9 @@ def confirmarOrdenCompra(request, pk):
     ordencompra = OrdenCompra.getById(pk)
     print(ordencompra)
     #mayorista = Mayorista.searchByObjectId(ordencompra.mayorista_id)
+    if(not ordencompra.mayorista_aprobo):
+        return Response("Falta aprovacion mayorista", status=status.HTTP_400_BAD_REQUEST)
+
     for parProductoStock in ordencompra.productos:
         productoAfectado = Producto.getById(parProductoStock["id"])
         productoAfectado.stock -= parProductoStock["stock"]
@@ -79,14 +83,12 @@ def confirmarOrdenCompra(request, pk):
 @api_view(['PATCH'])
 def editarOrdenCompra(request, pk):
     print("-----------------------")
-    acum_serial = [ StockPedidoSerializer(data=datos) for datos in request.data ]
-    #transformarlo en un nuevo serializador Pedido
-    creados = [ dict(stockser.create()) for stockser in acum_serial if stockser.is_valid()]
-    print(creados)
+    pedidoOrden = PedidoSerializer(data=request.data)
+    ordencompraAnterior = OrdenCompra.getById(request.data['id'])
 
-    if len(creados)>0:
-        ordencompraAnterior = OrdenCompra.objects.get(_id=ObjectId(pk))
-        ordencompraAnterior.productos = creados
+    if pedidoOrden.is_valid() and ordencompraAnterior._id != None: #comprobar clave
+        #pedidoOrden.update()
+        ordencompraAnterior.productos = pedidoOrden.validated_data['productos']
         ordencompraAnterior.save()
         return Response("ok", status=status.HTTP_200_OK)
     return Response("Esta vacio", status=status.HTTP_400_BAD_REQUEST)
